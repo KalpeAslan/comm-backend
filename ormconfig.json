@@ -6,12 +6,11 @@
   "username": "aslan",
   "password": "aslan2001",
   "database": "comm",
-  "entities": ["dist/src/entities/*.entity{ .ts,.js}"],
+  "entities": ["dist/src/entities/*.js"],
   "synchronize": false,
-  "migrations": ["dist/migrations/*{.ts,.js}"],
-  "migrationsTableName": "migrations_typeorm",
+  "migrations": ["dist/src/migrations/*.js"],
   "migrationsRun": true,
   "cli": {
-    "migrationsDir": "src/migration"
+    "migrationsDir": "src/migrations"
   }
 }
