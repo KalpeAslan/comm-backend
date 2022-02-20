@@ -7,7 +7,7 @@ export class UserEntity {
   id: number;
 
   @Column({type: 'bigint'})
-  iin: number;
+  passportId: string;
 
   @Column({type: 'timestamp', name: 'birth_date'})
   birthDate: Date;
