@@ -22,7 +22,7 @@ export class TransactionsService {
     return paginate<TransactionEntity>(this.transactionsRepository, options);
   }
 
-  async getTransaction(txnHash: string): Promise<TransactionEntity> {
+  async getTransaction(txnHash: string): Promise<TransactionEntity | undefined> {
     return await this.transactionsRepository.findOne({ txnHash });
   }
 
