@@ -55,7 +55,6 @@ export class TransactionsController {
     const isUserFromExist = await this.userService.isUserExist(transactionDto.fromAddress);
     const isUserToExist = await this.userService.isUserExist(transactionDto.toAddress);
 
-    console.log(isUserToExist);
     if (!isUserFromExist && !isUserToExist) return response.send({
       message: "One of users doesnt exist",
       status: 404
