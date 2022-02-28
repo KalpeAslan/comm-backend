@@ -1,4 +1,4 @@
-import { IsEthereumAddress, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsEthereumAddress, IsNotEmpty, IsNumber, IsString, Length, MaxLength, MinLength } from "class-validator";
 import { UserEntity } from "../entities/user.entity";
 
 export class UserDto extends UserEntity{
@@ -10,7 +10,8 @@ export class UserDto extends UserEntity{
 
   @IsNotEmpty()
   @IsString()
-  @Length(12, 12)
+  @MinLength(12)
+  @MaxLength(12)
   passportId: string
 
   @IsNotEmpty()

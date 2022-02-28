@@ -35,7 +35,6 @@ export class UsersController {
   ): Promise<Response<UserEntity>> {
     const user = await this.userService.getUser(address.toLowerCase());
 
-    console.log(user)
     if(user === undefined) return response.send({
       message: `User with address ${address} not found`,
       status: 404
@@ -52,12 +51,12 @@ export class UsersController {
   async postUser(
     @Body() userDto: UserDto,
     @Res() response: Response
-  ): Promise<Response<IResponse>> {
+  ): Promise<Response<UserEntity>> {
 
     await this.userService.saveUser(userDto);
     return response.send({
-      message: "User is saved",
-      status: 12
+      message: await this.userService.getUser(userDto.address.toLowerCase()),
+      status: 200
     }).status(200);
   }
 
