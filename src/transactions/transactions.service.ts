@@ -19,7 +19,10 @@ export class TransactionsService {
   }
 
   async getTransactions(options: IPaginationOptions): Promise<Pagination<TransactionEntity>> {
-    return paginate<TransactionEntity>(this.transactionsRepository, options);
+    const queryBuilder = await this.transactionsRepository.createQueryBuilder("t")
+      .leftJoinAndSelect("t.from", "from")
+      .leftJoinAndSelect("t.to", "to");
+    return paginate<TransactionEntity>(queryBuilder, options);
   }
 
   async getTransaction(txnHash: string): Promise<TransactionEntity | undefined> {
