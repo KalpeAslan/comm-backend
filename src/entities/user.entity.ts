@@ -33,4 +33,6 @@ export class UserEntity {
   @Column({length: 255, nullable: true})
   email:string
 
+  @Column({type: 'boolean', default: false})
+  confirmed: boolean
 }
