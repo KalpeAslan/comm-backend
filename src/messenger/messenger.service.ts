@@ -39,7 +39,7 @@ export class MessengerService {
     await this.messagesRepository.delete({ user: user });
     await this.messagesRepository.save(message);
 
-    if (type === "mail") await this.sendMail(user.email);
+    if (type === "mail") await this.sendMail(user.email, code);
 
     return token;
   }
@@ -47,9 +47,9 @@ export class MessengerService {
   public async confirmMessageAndGetUser(messageDto: MessageDto): Promise<IConfirmMessageResponse> {
     const message = await this.messagesRepository.findOne({
       join: {
-        alias: 'message',
+        alias: "message",
         leftJoinAndSelect: {
-          user: 'message.user'
+          user: "message.user"
         }
       },
       where: {
@@ -77,7 +77,7 @@ export class MessengerService {
     };
 
     const user = { ...message.user };
-    await this.messagesRepository.delete({token: messageDto.token})
+    await this.messagesRepository.delete({ token: messageDto.token });
     return {
       message: "Confirmed!",
       state: true,
@@ -89,13 +89,12 @@ export class MessengerService {
     return await this.messagesRepository.findOne({ token }).then(value => value.user);
   }
 
-  private async sendMail(to: string): Promise<any> {
+  private async sendMail(to: string, code: string): Promise<any> {
     await this.mailerService.sendMail({
       to,
       from: conf.userGmail,
-      subject: "Test COMM",
-      text: "Hello world!",
-      html: "<h1>Hello FROM ASLAN</h1>"
+      subject: "Confirm Message COMM",
+      html: `<h1>Confirm code: ${code}</h1>`
     });
   }
 }

@@ -97,7 +97,7 @@ export class UsersController {
     const user = await this.userService.getUser(address);
 
 
-    if(user.confirmed) return response.send({
+    if (user.confirmed) return response.send({
       message: "User is confirmed!",
       status: 400
     }).status(400);
@@ -119,10 +119,11 @@ export class UsersController {
 
     const { message, state } = await this.userService.confirmUser(address, messageDto);
 
-    if (!state) return response.send({
-      message,
-      status: 400
-    }).status(400);
+    if (!state) return response
+      .status(400).send({
+        message,
+        status: 400
+      });
 
     return response.send({
       message: "User is confirmed",

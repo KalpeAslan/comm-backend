@@ -29,7 +29,6 @@ export class UsersService {
 
   async confirmUser(address: string, _message: MessageDto): Promise<IConfirmMessageResponse> {
     const {state, user, message} = await this.messengerService.confirmMessageAndGetUser(_message)
-    console.log(user)
     if(state) {
       const _user: UserEntity = {
         ...user,
