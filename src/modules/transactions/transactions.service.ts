@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { TransactionEntity } from "../entities/transaction.entity";
+import { TransactionEntity } from "../../entities/transaction.entity";
 import { Repository } from "typeorm";
-import { TransactionDto } from "../dto/transaction.dto";
+import { TransactionDto } from "../../dto/transaction.dto";
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { UsersService } from "../users/users.service";
-import { UserEntity } from "../entities/user.entity";
+import { UserEntity } from "../../entities/user.entity";
 
 @Injectable()
 export class TransactionsService {

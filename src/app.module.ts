@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TransactionsModule } from './transactions/transactions.module';
-import { UsersModule } from './users/users.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import ormConfig from 'ormconfig.json'
 import { TypeOrmModuleOptions } from "@nestjs/typeorm/dist/interfaces/typeorm-options.interface";
-import { MessengerModule } from './messenger/messenger.module';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { conf } from "../conf";
+import { MessengerModule } from './modules/messenger/messenger.module';
 
 @Module({
   imports: [

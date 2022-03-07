@@ -9,15 +9,16 @@ import {
   Post,
   Put,
   Query,
-  Res
+  Res, UploadedFile, UseInterceptors
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { IResponse } from "../ts/common.types";
-import { UserDto } from "../dto/user.dto";
+import { IResponse } from "../../ts/common.types";
+import { UserDto } from "../../dto/user.dto";
 import { Response } from "express";
-import { UserEntity } from "../entities/user.entity";
+import { UserEntity } from "../../entities/user.entity";
 import { MessengerService } from "../messenger/messenger.service";
-import { MessageDto } from "../dto/message.dto";
+import { MessageDto } from "../../dto/message.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 
 @Controller("/api/v1/users")
@@ -63,10 +64,15 @@ export class UsersController {
   }
 
 
-  @Post("/")
+  @Post("/add")
+  @UseInterceptors(
+    FileInterceptor('photo'),
+    FileInterceptor('pass')
+  )
   async postUser(
     @Body() userDto: UserDto,
-    @Res() response: Response
+    @Res() response: Response,
+    @UploadedFile() file: Express.Multer.File
   ): Promise<Response<UserEntity>> {
 
     const isUserExist = await this.userService.isUserExist(userDto.address);

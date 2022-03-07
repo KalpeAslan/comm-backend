@@ -1,12 +1,12 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "../entities/user.entity";
+import { UserEntity } from "../../entities/user.entity";
 import { Repository } from "typeorm";
-import { UserDto } from "../dto/user.dto";
+import { UserDto } from "../../dto/user.dto";
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
-import { MessageDto } from "../dto/message.dto";
+import { MessageDto } from "../../dto/message.dto";
 import { MessengerService } from "../messenger/messenger.service";
-import { IConfirmMessageResponse } from "../ts/common.types";
+import { IConfirmMessageResponse } from "../../ts/common.types";
 
 @Injectable()
 export class UsersService {

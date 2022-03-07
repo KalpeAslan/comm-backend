@@ -1,14 +1,14 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
-import { conf } from "../../conf";
+import { conf } from "../../../conf";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MessagesEntity } from "../entities/messages.entity";
+import { MessagesEntity } from "../../entities/messages.entity";
 import { Repository } from "typeorm";
-import { UserEntity } from "../entities/user.entity";
+import { UserEntity } from "../../entities/user.entity";
 import { sha256 } from "js-sha256";
-import { MessageDto } from "../dto/message.dto";
-import { utils } from "../utils/utils";
-import { IConfirmMessageResponse } from "../ts/common.types";
+import { MessageDto } from "../../dto/message.dto";
+import { utils } from "../../utils/utils";
+import { IConfirmMessageResponse } from "../../ts/common.types";
 import { UsersService } from "../users/users.service";
 
 
