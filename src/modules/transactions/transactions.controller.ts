@@ -52,8 +52,8 @@ export class TransactionsController {
     @Body() transactionDto: TransactionDto,
     @Res() response: Response
   ): Promise<Response<IResponse>> {
-    const isUserFromExist = await this.userService.isUserExist(transactionDto.fromAddress);
-    const isUserToExist = await this.userService.isUserExist(transactionDto.toAddress);
+    const isUserFromExist = await this.userService.isUserExistByAddress(transactionDto.fromAddress);
+    const isUserToExist = await this.userService.isUserExistByAddress(transactionDto.toAddress);
 
     if (!isUserFromExist && !isUserToExist) return response.send({
       message: "One of users doesnt exist",

@@ -32,7 +32,7 @@ export class TransactionsService {
 
   async isTransactionCorrect(transactionDto: TransactionDto): Promise<boolean> {
 
-    const isUserFromExist = this.userService.isUserExist(transactionDto.fromAddress);
+    const isUserFromExist = this.userService.isUserExistByAddress(transactionDto.fromAddress);
     return false;
   }
 

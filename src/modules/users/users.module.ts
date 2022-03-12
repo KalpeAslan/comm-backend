@@ -6,10 +6,11 @@ import { UserEntity } from "../../entities/user.entity";
 import { MessengerModule } from "../messenger/messenger.module";
 import { MulterModule } from "@nestjs/platform-express";
 import { conf } from "../../../conf";
+import { AddressEntity } from "../../entities/addresses.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, AddressEntity]),
     forwardRef(() => MessengerModule),
     MulterModule.register({
       dest: conf.fileDest

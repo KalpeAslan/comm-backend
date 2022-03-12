@@ -19,6 +19,7 @@ import { UserEntity } from "../../entities/user.entity";
 import { MessengerService } from "../messenger/messenger.service";
 import { MessageDto } from "../../dto/message.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { AddAddressDto } from "./addAddressDto.dto";
 
 
 @Controller("/api/v1/users")
@@ -50,7 +51,7 @@ export class UsersController {
     @Param("address") address: string,
     @Res() response: Response
   ): Promise<Response<UserEntity>> {
-    const user = await this.userService.getUser(address.toLowerCase());
+    const user = await this.userService.getUserByAddress(address);
 
     if (user === undefined) return response.send({
       message: `User with address ${address} not found`,
@@ -64,43 +65,18 @@ export class UsersController {
   }
 
 
-  @Post("/add")
-  @UseInterceptors(
-    FileInterceptor('photo'),
-    FileInterceptor('pass')
-  )
-  async postUser(
-    @Body() userDto: UserDto,
-    @Res() response: Response,
-    @UploadedFile() file: Express.Multer.File
-  ): Promise<Response<UserEntity>> {
-
-    const isUserExist = await this.userService.isUserExist(userDto.address);
-    if (isUserExist) return response.send({
-      message: "User is Exist",
-      status: 400
-    }).status(400);
-
-    await this.userService.saveUser(userDto);
-    return response.send({
-      message: await this.userService.getUser(userDto.address.toLowerCase()),
-      status: 200
-    }).status(200);
-  }
-
-
   @Get("/confirm/:address")
   async confirmUserGet(
     @Param("address") address: string,
     @Res() response: Response
   ): Promise<Response> {
-    const isUserExist = await this.userService.isUserExist(address);
+    const isUserExist = await this.userService.isUserExistByAddress(address);
     if (!isUserExist) return response.send({
       message: "User doesnt is exist!",
       status: 400
     }).status(400);
 
-    const user = await this.userService.getUser(address);
+    const user = await this.userService.getUserByAddress(address);
 
 
     if (user.confirmed) return response.send({
@@ -108,13 +84,38 @@ export class UsersController {
       status: 400
     }).status(400);
 
-    const token = await this.messengerService.generateMessage(user, "mail");
+    const token = await this.messengerService.generateMessage(user as unknown as UserEntity, "mail");
 
     return response.send({
       message: token,
       status: 200
     }).status(200);
   }
+
+  @Post("/add")
+  @UseInterceptors(
+    FileInterceptor("photo"),
+    FileInterceptor("pass")
+  )
+  async postUser(
+    @Body() userDto: UserDto,
+    @Res() response: Response,
+    @UploadedFile() file: Express.Multer.File
+  ): Promise<Response<UserEntity>> {
+
+    const isUserExist = await this.userService.isUserExistByAddress(userDto.address);
+    if (isUserExist) return response.send({
+      message: "User is Exist",
+      status: 400
+    }).status(400);
+
+    await this.userService.saveUser(userDto);
+    return response.send({
+      message: await this.userService.getUserByAddress(userDto.address.toLowerCase()),
+      status: 200
+    }).status(200);
+  }
+
 
   @Patch("/confirm/:address")
   async confirmUser(
@@ -143,7 +144,7 @@ export class UsersController {
     @Body() userDto: UserDto,
     @Res() response: Response
   ): Promise<Response<IResponse>> {
-    const isUserExist = await this.userService.isUserExist(userDto.address);
+    const isUserExist = await this.userService.isUserExistByAddress(userDto.address);
 
     if (!isUserExist) return response.send({
       message: `User with address ${userDto.address} doesnt exist!`,
@@ -156,5 +157,37 @@ export class UsersController {
       message: "User is saved",
       status: 12
     }).status(200);
+  }
+
+  @Put("/add-address")
+  async addAddress(
+    @Body() addAddressDto: AddAddressDto,
+    @Res() response: Response
+  ) {
+    const isUserExist = await this.userService.isUserExistById(addAddressDto.userId);
+    if (!isUserExist) return response.status(404).send({
+      message: "User doesnt exist!",
+      status: 404
+    });
+    await this.userService.addAddress(addAddressDto);
+    const user: UserEntity = await this.userService.getUserById(addAddressDto.userId);
+    const token: string = await this.messengerService.generateMessage(user, "mail");
+    return response.status(200).send({
+      message: token,
+      status: 200
+    });
+  }
+
+  @Put("/confirm-address/:address")
+  async confirmAddress(
+    @Body() messageDto: MessageDto,
+    @Param("address") address: string,
+    @Res() response: Response
+  ) {
+    const confirmedMessage = await this.userService.confirmAddress(address, messageDto);
+    return response.status(confirmedMessage.state ? 200 : 400).send({
+      message: confirmedMessage.message,
+      status: confirmedMessage.state ? 200 : 400
+    });
   }
 }

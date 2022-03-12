@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { conf } from "../../../conf";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MessagesEntity } from "../../entities/messages.entity";
+import { MessageEntity } from "../../entities/messageEntity";
 import { Repository } from "typeorm";
 import { UserEntity } from "../../entities/user.entity";
 import { sha256 } from "js-sha256";
@@ -16,11 +16,19 @@ import { UsersService } from "../users/users.service";
 export class MessengerService {
   constructor(
     private readonly mailerService: MailerService,
-    @InjectRepository(MessagesEntity)
-    private readonly messagesRepository: Repository<MessagesEntity>,
+    @InjectRepository(MessageEntity)
+    private readonly messagesRepository: Repository<MessageEntity>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService
   ) {
+  }
+
+  public async getUserByToken(token: string): Promise<UserEntity> {
+    return await this.messagesRepository.findOne({ token }).then(value => value.user);
+  }
+
+  public async getMessageByToken(token: string): Promise<MessageEntity> {
+    return this.messagesRepository.findOne({ token });
   }
 
   public async generateMessage(user: UserEntity, type: "mail" | "phone"): Promise<string> {
@@ -85,9 +93,6 @@ export class MessengerService {
     };
   }
 
-  public async getUserByToken(token: string): Promise<UserEntity> {
-    return await this.messagesRepository.findOne({ token }).then(value => value.user);
-  }
 
   private async sendMail(to: string, code: string): Promise<any> {
     await this.mailerService.sendMail({
