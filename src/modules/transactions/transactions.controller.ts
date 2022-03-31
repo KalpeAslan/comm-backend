@@ -2,9 +2,9 @@ import { Body, Controller, DefaultValuePipe, Get, Param, Post, Query, Res } from
 import { TransactionsService } from "./transactions.service";
 import { TransactionDto } from "../../dto/transaction.dto";
 import { Response } from "express";
-import { IResponse } from "../../ts/common.types";
+import { IResponse } from "../../ts/common";
 import { UsersService } from "../users/users.service";
-import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { Pagination } from "nestjs-typeorm-paginate";
 import { TransactionEntity } from "../../entities/transaction.entity";
 
 @Controller("/api/v1/transactions")

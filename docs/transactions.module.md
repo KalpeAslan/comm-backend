@@ -1,4 +1,4 @@
-# Transactions module
+# TransactionsTable module
 
 
 > **Base Url**: http://localhost:3000/api/v1/transactions
@@ -59,7 +59,7 @@ code: 200
 
 
 
-## Get Transactions
+## Get TransactionsTable
 
 > **Base Url**: http://localhost:3000/api/v1/transactions
 > **Method GET**

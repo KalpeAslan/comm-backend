@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
+import { StoreEntity } from "./store.entity";
 
 @Entity("transactions")
 export class TransactionEntity {
@@ -21,9 +22,15 @@ export class TransactionEntity {
   @Column({ type: "numeric" })
   value: number;
 
-  @ManyToOne(() => UserEntity, user => user.id)
-  from: UserEntity;
+  @Column({length: 20})
+  currency: string
+
+  @Column({type: 'text', nullable: true})
+  additionalInfo
 
   @ManyToOne(() => UserEntity, user => user.id)
-  to: UserEntity;
+  from: UserEntity | number;
+
+  @ManyToOne(() => StoreEntity, store => store.id)
+  to: StoreEntity | number;
 }

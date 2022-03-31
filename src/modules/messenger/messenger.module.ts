@@ -3,14 +3,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MessengerService } from './messenger.service';
 import { conf } from "../../../conf";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { MessageEntity } from "../../entities/messageEntity";
+import { MessageEntityEntity } from "../../entities/messageEntity.entity";
 import { UsersModule } from "../users/users.module";
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([MessageEntity]),
+    TypeOrmModule.forFeature([MessageEntityEntity]),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',

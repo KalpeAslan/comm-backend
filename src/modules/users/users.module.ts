@@ -7,6 +7,8 @@ import { MessengerModule } from "../messenger/messenger.module";
 import { MulterModule } from "@nestjs/platform-express";
 import { conf } from "../../../conf";
 import { AddressEntity } from "../../entities/addresses.entity";
+import { PrivateKeyService } from "../common/private-key/private-key.service";
+import { CommonModule } from "../common/common.module";
 
 @Module({
   imports: [
@@ -14,8 +16,8 @@ import { AddressEntity } from "../../entities/addresses.entity";
     forwardRef(() => MessengerModule),
     MulterModule.register({
       dest: conf.fileDest
-    })
-
+    }),
+    CommonModule
   ],
   controllers: [UsersController],
   providers: [UsersService],

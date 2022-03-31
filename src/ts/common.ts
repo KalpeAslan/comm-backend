@@ -11,3 +11,8 @@ export interface IConfirmMessageResponse {
   state: boolean,
   user?: UserEntity,
 }
+
+export interface IPassword {
+  password: string
+  userId: number
+}

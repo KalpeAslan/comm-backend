@@ -6,6 +6,7 @@ import { TransactionDto } from "../../dto/transaction.dto";
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { UsersService } from "../users/users.service";
 import { UserEntity } from "../../entities/user.entity";
+import { AddressEntity } from "../../entities/addresses.entity";
 
 @Injectable()
 export class TransactionsService {
@@ -14,7 +15,9 @@ export class TransactionsService {
     private readonly transactionsRepository: Repository<TransactionEntity>,
     private readonly userService: UsersService,
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(AddressEntity)
+    private readonly addressEntity: Repository<AddressEntity>,
   ) {
   }
 
@@ -38,14 +41,34 @@ export class TransactionsService {
 
   async saveTransaction(transactionDto: TransactionDto): Promise<void> {
 
-    const from = await this.userRepository.findOne({ address: transactionDto.fromAddress });
-    const to = await this.userRepository.findOne({ address: transactionDto.toAddress });
+    const from: AddressEntity = await this.addressEntity.findOne({
+      join: {
+        alias: 't',
+        leftJoinAndSelect: {
+          user: 't.user',
+        },
+      },
+      where: {
+        address: transactionDto.fromAddress
+      }
+    });
+    const to: AddressEntity = await this.addressEntity.findOne({
+      join: {
+        alias: 't',
+        leftJoinAndSelect: {
+          user: 't.user',
+        },
+      },
+      where: {
+        address: transactionDto.toAddress
+      }
+    });
 
     const transaction = {
       ...transactionDto,
       timestamp: new Date(transactionDto.timestampString).toString(),
-      from,
-      to
+      from: from.user,
+      to: 1
     };
     delete transaction.fromAddress;
     delete transaction.toAddress;

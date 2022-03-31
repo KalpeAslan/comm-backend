@@ -2,14 +2,15 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "../../entities/user.entity";
 import { Repository } from "typeorm";
-import { UserDto } from "../../dto/user.dto";
+import { CreateUserDto } from "../../dto/createUser.dto";
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { MessageDto } from "../../dto/message.dto";
 import { MessengerService } from "../messenger/messenger.service";
-import { IConfirmMessageResponse } from "../../ts/common.types";
+import { IConfirmMessageResponse, IPassword } from "../../ts/common";
 import { AddressEntity } from "../../entities/addresses.entity";
 import { AddAddressDto } from "./addAddressDto.dto";
-import { MessageEntity } from "../../entities/messageEntity";
+import { MessageEntityEntity } from "../../entities/messageEntity.entity";
+import { UpdateUserDto } from "../../dto/updateUser.dto";
 
 @Injectable()
 export class UsersService {
@@ -27,8 +28,24 @@ export class UsersService {
     return paginate<UserEntity>(this.usersRepository, options);
   }
 
-  async getUserByAddress(address: string): Promise<UserEntity> {
-    return await this.usersRepository.findOne({address});
+  async getUserByAddress(address: string): Promise<UserEntity | undefined> {
+    const addressEntity: AddressEntity = await this.addressesEntityRepository.findOne({
+      join: {
+        alias: "address",
+        leftJoinAndSelect: {
+          user: "address.user"
+        }
+      },
+      where: {
+        address
+      }
+    });
+    if (addressEntity && addressEntity.user) {
+      delete addressEntity.user.password;
+      return addressEntity.user;
+    }
+
+    return undefined;
   }
 
   async getUserById(id: number): Promise<UserEntity> {
@@ -37,19 +54,33 @@ export class UsersService {
 
 
   async isUserExistByAddress(address: string): Promise<boolean> {
-    return !!await this.usersRepository.findOne({ address });
+    return !!await this.addressesEntityRepository.findOne({ address });
   }
 
   async isUserExistById(id: number): Promise<boolean> {
     return !!await this.usersRepository.findOne({ id });
   }
 
-  async saveUser(userDto: UserDto): Promise<void> {
-    await this.usersRepository.save(userDto);
+  async saveUser(userDto: CreateUserDto): Promise<UserEntity> {
+    const user: UserEntity = await this.usersRepository.save(userDto);
+    await this.addAddress({
+      userId: user.id,
+      address: userDto.address
+    });
+    return user;
   }
 
-  async updateUser(userDto: UserDto): Promise<void> {
-    await this.usersRepository.update(userDto.id, userDto);
+  async updateUser(userId: number, updateUserDto: UpdateUserDto): Promise<void> {
+    const updatedUser = {
+      ...updateUserDto
+    };
+    delete updatedUser.token;
+    delete updatedUser.code;
+
+    await this.usersRepository.update(userId, {
+      ...updatedUser,
+      confirmed: true
+    });
   }
 
   async confirmUser(address: string, _message: MessageDto): Promise<IConfirmMessageResponse> {
@@ -74,6 +105,12 @@ export class UsersService {
       user,
       confirmed: false
     });
+  }
+
+
+  async isPasswordCorrect({userId, password}: IPassword): Promise<boolean | undefined> {
+    const user: UserEntity = await this.usersRepository.findOne({id: userId})
+    return user ? user.password === password : undefined
   }
 
 

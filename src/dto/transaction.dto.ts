@@ -1,5 +1,5 @@
 import { TransactionEntity } from "../entities/transaction.entity";
-import { IsDate, IsEthereumAddress, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
+import { IsEthereumAddress, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
 
 export class TransactionDto extends TransactionEntity {
   @IsNotEmpty()
@@ -33,4 +33,10 @@ export class TransactionDto extends TransactionEntity {
   @IsString()
   @IsEthereumAddress()
   toAddress: string
+
+  @IsNotEmpty()
+  @IsString()
+  currency: string
+
+  additionalInfo: string
 }
