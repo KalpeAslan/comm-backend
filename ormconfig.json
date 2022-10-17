@@ -9,7 +9,7 @@
   "entities": ["dist/src/entities/*.js"],
   "synchronize": false,
   "migrations": ["dist/src/migrations/*.js"],
-  "migrationsRun": true,
+  "migrationsRun": false,
   "cli": {
     "migrationsDir": "src/migrations"
   }
