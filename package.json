@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "typeorm": "node_modules/.bin/typeorm",
+    "typeorm:migration-run": "npm run typeorm -- migration:run --config ormconfig.js",
+    "typeorm:migration-generate": "npm run typeorm migration:generate",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
