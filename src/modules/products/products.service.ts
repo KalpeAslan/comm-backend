@@ -4,13 +4,16 @@ import {ProductEntity} from "../../entities/product.entity";
 import {AddProductDto} from "./dto/add-product.dto";
 import {Repository} from "typeorm";
 import {UsersService} from "../users/users.service";
+import {CurrencyEntity} from "../../entities/currency.entity";
 
 @Injectable()
 export class ProductsService {
     constructor(
         @InjectRepository(ProductEntity)
         private readonly productEntity: Repository<ProductEntity>,
-        private readonly userService: UsersService
+        private readonly userService: UsersService,
+        @InjectRepository(CurrencyEntity)
+        private readonly currencyEntity: Repository<CurrencyEntity>,
     ) {
     }
 

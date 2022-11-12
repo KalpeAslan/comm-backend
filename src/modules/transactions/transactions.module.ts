@@ -8,10 +8,11 @@ import { AddressEntity } from "../../entities/addresses.entity";
 import {ProductTransactionsEntity} from "../../entities/product-transactions.entity";
 import {TransactionEntity} from "../../entities/transaction.entity";
 import {ProductsModule} from "../products/products.module";
+import {CurrencyEntity} from "../../entities/currency.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TransactionEntity,UserEntity, AddressEntity, ProductTransactionsEntity]),
+    TypeOrmModule.forFeature([TransactionEntity,UserEntity, AddressEntity, ProductTransactionsEntity, CurrencyEntity]),
     UsersModule,
     ProductsModule
   ],
