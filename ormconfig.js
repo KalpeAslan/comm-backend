@@ -13,6 +13,6 @@ module.exports = {
   migrationsRun: false,
   bigNumberStrings: false,
   cli: {
-    migrationsDir: "src/migrations",
+    migrationsDir: "src/migrationsStash",
   }
 }
