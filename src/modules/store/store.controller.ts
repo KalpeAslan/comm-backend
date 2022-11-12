@@ -4,6 +4,7 @@ import { Response } from "express";
 import { UsersService } from "../users/users.service";
 import { StoreService } from "./store.service";
 import { StoreEntity } from "../../entities/store.entity";
+import {CreateProductDto} from "./dto/createProduct.dto";
 
 @Controller("/api/v1/store")
 export class StoreController {
@@ -12,6 +13,16 @@ export class StoreController {
     private readonly userService: UsersService,
     private readonly storeService: StoreService
   ) {
+  }
+
+  @Get('products')
+  async getProducts(
+      @Res() response: Response
+  ) {
+    return response.send({
+      message: await this.storeService.getProducts(),
+      status: 200
+    }).status(200)
   }
 
   @Get('/:storeId')
@@ -27,24 +38,14 @@ export class StoreController {
   }
 
 
-  @Post("/create")
-  async createStore(
-    @Body() createStoreDto: CreateStoreDto,
-    @Res() response: Response
+  @Post('create-product')
+  async createProduct(
+      @Body() data: CreateProductDto,
+      @Res() response: Response
   ) {
-    const isPasswordCorrect = await this.userService.isPasswordCorrect({
-      password: createStoreDto.password,
-      userId: createStoreDto.ownerId
-    });
-    if (!isPasswordCorrect) return response.send({
-      message: "Password is invalid!",
-      status: 403
-    }).status(403);
-
-    const storeEntity: StoreEntity = await this.storeService.createStore(createStoreDto);
     return response.send({
-      message: storeEntity,
+      message: await this.storeService.createProduct(data),
       status: 200
-    }).status(200);
+    }).status(200)
   }
 }

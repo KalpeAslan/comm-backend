@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import { UserEntity } from "./user.entity";
 import { StoreEntity } from "./store.entity";
 
@@ -29,8 +29,14 @@ export class TransactionEntity {
   additionalInfo
 
   @ManyToOne(() => UserEntity, user => user.id)
-  from: UserEntity | number;
+  from: UserEntity;
 
-  @ManyToOne(() => StoreEntity, store => store.id)
-  to: StoreEntity | number;
+  @ManyToOne(() => UserEntity, user => user.id)
+  to: UserEntity;
+
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+  updated_at: Date;
 }

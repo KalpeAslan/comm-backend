@@ -5,13 +5,16 @@ import { Response } from "express";
 import { IResponse } from "../../ts/common";
 import { UsersService } from "../users/users.service";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { TransactionEntity } from "../../entities/transaction.entity";
+import {TransactionEntity} from "../../entities/transaction.entity";
+import {ProductTransactionDto} from "../../dto/product-transaction.dto";
+import {ProductsService} from "../products/products.service";
 
 @Controller("/api/v1/transactions")
 export class TransactionsController {
   constructor(
     private readonly transactionService: TransactionsService,
-    private readonly userService: UsersService
+    private readonly userService: UsersService,
+    private readonly productService: ProductsService
   ) {
   }
 
@@ -28,6 +31,41 @@ export class TransactionsController {
       status: 200
     }).status(200);
   }
+
+  @Get('/meta/:ethAddress')
+  async getTransactionsCount(
+      @Param('ethAddress') ethAddress: string
+  ) {
+    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
+    return this.transactionService.getTransactionsMeta(user.id)
+  }
+
+  @Get('/getClients/:ethAddress')
+  async getClients(
+      @Param('ethAddress') ethAddress: string
+  ) {
+    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
+    return this.transactionService.getClients(user.id)
+  }
+
+  @Get('/getIncomes/:ethAddress')
+  async getIncomes(
+      @Param('ethAddress') ethAddress: string
+  ) {
+    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
+    return this.transactionService.getIncome(user.id)
+  }
+
+
+  @Get('/my/:ethAddress')
+  async getMyTransactions(
+      @Param('ethAddress') ethAddress: string
+  ) {
+    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
+    return this.transactionService.getMyTransactions(user.id)
+  }
+
+
 
   @Get("/:txnHash")
   async getTransaction(
@@ -47,19 +85,32 @@ export class TransactionsController {
   }
 
 
+  @Post('/buy-product')
+  async buyProductTx(
+      @Body() transactionDto: ProductTransactionDto,
+      @Res() response: Response
+  ) {
+    const tx = await this.transactionService.saveTransaction(transactionDto)
+    const buyer = await this.userService.findOrCreateUserByEthAddress(transactionDto.fromAddress)
+    const seller = await this.userService.findOrCreateUserByEthAddress(transactionDto.toAddress)
+    const product = await this.productService.getProductById(transactionDto.productId)
+    return response.send({
+      message: await this.transactionService.saveProductTransaction({
+        transaction: tx,
+        seller,
+        buyer,
+        product
+      })
+    })
+  }
+
+
+
   @Post("/")
   async postTransaction(
     @Body() transactionDto: TransactionDto,
     @Res() response: Response
   ): Promise<Response<IResponse>> {
-    const isUserFromExist = await this.userService.isUserExistByAddress(transactionDto.fromAddress);
-    const isUserToExist = await this.userService.isUserExistByAddress(transactionDto.toAddress);
-
-    if (!isUserFromExist && !isUserToExist) return response.send({
-      message: "One of users doesnt exist",
-      status: 404
-    }).status(400);
-
     await this.transactionService.saveTransaction(transactionDto);
     return response.send({
       message: "Transaction is saved",

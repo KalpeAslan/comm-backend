@@ -12,12 +12,10 @@ import {
   Res
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { IResponse } from "../../ts/common";
 import { CreateUserDto } from "../../dto/createUser.dto";
 import { Response } from "express";
 import { UserEntity } from "../../entities/user.entity";
 import { MessengerService } from "../messenger/messenger.service";
-import { MessageDto } from "../../dto/message.dto";
 import { AddAddressDto } from "./addAddressDto.dto";
 import { UpdateUserDto } from "../../dto/updateUser.dto";
 import { PrivateKeyService } from "../common/private-key/private-key.service";
@@ -49,6 +47,13 @@ export class UsersController {
     }).status(200);
   }
 
+  @Get('/getStatus/:address')
+  async getUserStatus(
+      @Param("address") address: string,
+  ) {
+    return this.userService.getUserStatus(address)
+  }
+
   @Get("/:address")
   async getUser(
     @Param("address") address: string,
@@ -77,11 +82,11 @@ export class UsersController {
     const isUserExist = await this.userService.isUserExistByAddress(userDto.address);
 
     if (isUserExist) return response.send({
-      message: "User is Exist",
-      status: 400
-    }).status(400);
+      message: "User Created",
+      status: 200
+    }).status(200);
     const user = await this.userService.saveUser(userDto);
-    await this.messengerService.generateMessage(user, "mail");
+    // await this.messengerService.generateMessage(user, "mail");
 
     return response.send({
       message: "User Created",

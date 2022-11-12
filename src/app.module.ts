@@ -7,11 +7,12 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm/dist/interfaces/typeorm-op
 import { MessengerModule } from './modules/messenger/messenger.module';
 import { MessengerController } from './modules/messenger/messenger.controller';
 import { StoreModule } from "./modules/store/store.module";
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormConfig as unknown as TypeOrmModuleOptions),
-    TransactionsModule, UsersModule, MessengerModule,StoreModule
+    TransactionsModule, UsersModule, MessengerModule,StoreModule, ProductsModule
   ],
   controllers: [MessengerController],
   providers: [],

@@ -1,4 +1,13 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src"
+  "sourceRoot": "src/",
+  "assets": [
+    {
+      "exclude": "src/assets",
+      "watchAssets": false
+    }
+  ],
+  "ignore": [
+    "src/assets"
+  ]
 }

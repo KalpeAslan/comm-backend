@@ -124,6 +124,13 @@ export class MessengerService {
     return  await this.messagesRepository.delete({ token: messageDto.token });
   }
 
+  public async deleteAll() {
+    console.log(
+        await this.messagesRepository.find()
+    )
+    return await this.messagesRepository.delete(1)
+  }
+
 
 
   private async sendMail({ code, to, token }: ISendMail): Promise<any> {
