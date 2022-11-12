@@ -102,8 +102,6 @@ export class TransactionsService {
                 }
             }
         })
-        console.log(userId)
-        console.log(txIncomes)
 
         data.incomes = [
             ...data.incomes,

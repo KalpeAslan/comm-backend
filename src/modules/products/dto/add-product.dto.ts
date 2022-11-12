@@ -12,7 +12,7 @@ export class AddProductDto {
     price: string
 
     @IsNotEmpty()
-    @IsNumber()
+    @IsString()
     currencyId: number
 
     @IsNotEmpty()

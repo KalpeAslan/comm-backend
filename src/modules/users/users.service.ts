@@ -62,7 +62,7 @@ export class UsersService {
 
 
     async findOrCreateUserByEthAddress(address: string): Promise<UserEntity> {
-        const user = await this.usersRepository.findOne({address})
+        const user = await this.usersRepository.findOne({address: address.toLowerCase()})
         if (user) return user
 
         return this.usersRepository.save({

@@ -22,9 +22,11 @@ export class ProductsService {
         body: AddProductDto,
     ) {
         const user = await this.userService.findOrCreateUserByEthAddress(body.ethAddress)
+
         return this.productEntity.save({
             ...body,
-            user
+            user,
+            currency: +body.currencyId
         })
     }
 
@@ -37,6 +39,7 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
+                    currency: 'p.currency'
                 },
             }
         })
@@ -49,6 +52,7 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
+                    currency: 'p.currency',
                 },
             }
         })
@@ -63,6 +67,7 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
+                    currency: 'p.currency',
                 },
             }
         })

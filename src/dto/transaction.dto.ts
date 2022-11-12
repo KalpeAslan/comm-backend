@@ -35,5 +35,13 @@ export class TransactionDto {
   @IsString()
   currency: string
 
+  @IsNotEmpty()
+  @IsNumber()
+  currencyFromId: number
+
+  @IsNotEmpty()
+  @IsNumber()
+  currencyToId: number
+
   additionalInfo: string
 }

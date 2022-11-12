@@ -28,7 +28,7 @@ export class ProductEntity{
     @Column()
     price: string
 
-    @OneToOne(() => CurrencyEntity, currency => currency.id)
+    @ManyToOne(() => CurrencyEntity, currency => currency.id)
     @JoinColumn()
     currency: number
 
