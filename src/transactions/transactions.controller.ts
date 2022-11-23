@@ -8,6 +8,7 @@ import { Pagination } from "nestjs-typeorm-paginate";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionDto} from "../dto/product-transaction.dto";
 import {ProductsService} from "../products/products.service";
+import {EPeriods} from "./constants/transaction.constants";
 
 @Controller("/api/v1/transactions")
 export class TransactionsController {
@@ -50,10 +51,11 @@ export class TransactionsController {
 
   @Get('/getIncomes/:ethAddress')
   async getIncomes(
-      @Param('ethAddress') ethAddress: string
+      @Param('ethAddress') ethAddress: string,
+      @Query('period', new DefaultValuePipe(EPeriods.Month)) period: EPeriods
   ) {
     const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
-    return this.transactionService.getIncome(user.id)
+    return this.transactionService.getIncome(user.id, EPeriods.Week)
   }
 
 

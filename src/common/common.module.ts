@@ -9,6 +9,6 @@ import { StoreEntity } from "../entities/store.entity";
   imports: [
     TypeOrmModule.forFeature([PrivateKeyEntity, StoreEntity])
   ],
-  exports: [PrivateKeyService]
+  exports: [PrivateKeyService, CurrencyService]
 })
 export class CommonModule {}
