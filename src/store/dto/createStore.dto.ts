@@ -1,4 +1,4 @@
-import { StoreEntity } from "../../../entities/store.entity";
+import { StoreEntity } from "../../entities/store.entity";
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateStoreDto extends StoreEntity {

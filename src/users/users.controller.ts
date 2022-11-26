@@ -12,12 +12,12 @@ import {
   Res
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { CreateUserDto } from "../../dto/createUser.dto";
+import { CreateUserDto } from "../dto/createUser.dto";
 import { Response } from "express";
-import { UserEntity } from "../../entities/user.entity";
-import { MessengerService } from "../messenger/messenger.service";
+import { UserEntity } from "../entities/user.entity";
+import { CommunicationService } from "../communication/communication.service";
 import { AddAddressDto } from "./addAddressDto.dto";
-import { UpdateUserDto } from "../../dto/updateUser.dto";
+import { UpdateUserDto } from "../dto/updateUser.dto";
 import { PrivateKeyService } from "../common/private-key/private-key.service";
 
 
@@ -26,8 +26,8 @@ export class UsersController {
 
   constructor(
     private readonly userService: UsersService,
-    @Inject(forwardRef(() => MessengerService))
-    private readonly messengerService: MessengerService,
+    @Inject(forwardRef(() => CommunicationService))
+    private readonly communicationService: CommunicationService,
     private readonly privateKey: PrivateKeyService
 
   ) {
@@ -82,11 +82,11 @@ export class UsersController {
     const isUserExist = await this.userService.isUserExistByAddress(userDto.address);
 
     if (isUserExist) return response.send({
-      message: "User Created",
+      message: "User Exist",
       status: 200
     }).status(200);
     const user = await this.userService.saveUser(userDto);
-    // await this.messengerService.generateMessage(user, "mail");
+    await this.communicationService.generateMessage(user, "mail");
 
     return response.send({
       message: "User Created",
@@ -100,7 +100,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @Res() response: Response
   ) {
-    const user: UserEntity = await this.messengerService.getUserByToken(updateUserDto.token);
+    const user: UserEntity = await this.communicationService.getUserByToken(updateUserDto.token);
 
     if (!user) return response.send({
       message: `User not found!`,
@@ -108,7 +108,7 @@ export class UsersController {
     }).status(404);
 
     await this.userService.updateUser(user.id, updateUserDto);
-    await this.messengerService.deleteMessage({token: updateUserDto.token, code: updateUserDto.code})
+    await this.communicationService.deleteMessage({token: updateUserDto.token, code: updateUserDto.code})
 
     return response.send({
       message: "User updated",
@@ -128,7 +128,7 @@ export class UsersController {
     });
     await this.userService.addAddress(addAddressDto);
     const user: UserEntity = await this.userService.getUserById(addAddressDto.userId);
-    const token: string = await this.messengerService.generateMessage(user, "mail");
+    const token: string = await this.communicationService.generateMessage(user, "mail");
     return response.status(200).send({
       message: token,
       status: 200

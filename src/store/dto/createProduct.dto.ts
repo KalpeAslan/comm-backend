@@ -1,4 +1,4 @@
-import {ProductEntity} from "../../../entities/product.entity";
+import {ProductEntity} from "../../entities/product.entity";
 import {IsEthereumAddress, IsNotEmpty, IsString} from "class-validator";
 
 export class CreateProductDto extends ProductEntity {

@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import crypto from "crypto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { PrivateKeyEntity } from "../../../entities/privateKey.entity";
-import { IIsPrivateKeyExist } from "../../../ts/modules/common.types";
+import { PrivateKeyEntity } from "../../entities/privateKey.entity";
+import { IIsPrivateKeyExist } from "../../ts/modules/common.types";
 import Crypto from "crypto-js";
-import { StoreEntity } from "../../../entities/store.entity";
-import { ProductDto } from "../../../dto/product.dto";
+import { StoreEntity } from "../../entities/store.entity";
+import { ProductDto } from "../../dto/product.dto";
 
 const exampleKey35 = "22c850aad93db742f9e11656952c08de5c542e438f8084d0422c93af084cbe55__1";
 

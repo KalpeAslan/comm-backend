@@ -1,16 +1,19 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
-import { conf } from "../../../conf";
+import { conf } from "../../conf";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MessageEntityEntity } from "../../entities/messageEntity.entity";
+import { MessageEntityEntity } from "../entities/messageEntity.entity";
 import { Repository } from "typeorm";
-import { UserEntity } from "../../entities/user.entity";
+import { UserEntity } from "../entities/user.entity";
 import { sha256 } from "js-sha256";
-import { MessageDto } from "../../dto/message.dto";
-import { utils } from "../../utils/utils";
-import { IConfirmMessageResponse } from "../../ts/common";
+import { MessageDto } from "../dto/message.dto";
+import { utils } from "../utils/utils";
+import { IConfirmMessageResponse } from "../ts/common";
 import { UsersService } from "../users/users.service";
 import { DeleteResult } from "typeorm/query-builder/result/DeleteResult";
+import sgMail from '@sendgrid/mail'
+import {communicationConfig} from "../configs/communication.config";
+import {MailService} from "@sendgrid/mail/src/mail";
 
 interface ISendMail {
   to: string;
@@ -19,7 +22,11 @@ interface ISendMail {
 }
 
 @Injectable()
-export class MessengerService {
+export class CommunicationService {
+  private readonly sendGridService: MailService
+  private readonly senderMail: string
+
+
   constructor(
     private readonly mailerService: MailerService,
     @InjectRepository(MessageEntityEntity)
@@ -27,6 +34,9 @@ export class MessengerService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService
   ) {
+    this.sendGridService = sgMail
+    this.sendGridService.setApiKey(communicationConfig().sendgridApiKey)
+    this.senderMail = communicationConfig().emailSender;
   }
 
   public async getUserByToken(token: string): Promise<UserEntity> {
@@ -59,7 +69,7 @@ export class MessengerService {
     const message = {
       user: user,
       date: new Date().toString(),
-      code: code,
+      code,
       token,
       type,
       state: false
@@ -73,7 +83,7 @@ export class MessengerService {
       to: user.email,
       code,
       token
-    });
+    }).then(console.log);
 
     return token;
   }
@@ -133,12 +143,12 @@ export class MessengerService {
 
 
 
-  private async sendMail({ code, to, token }: ISendMail): Promise<any> {
-    await this.mailerService.sendMail({
+  private async sendMail({ code, to, token }: ISendMail) {
+    return await this.sendGridService.send({
       to,
-      from: conf.userGmail,
+      from: this.senderMail,
       subject: "Confirm Message COMM",
-      html: `<h1>Confirm link: http://localhost:3001/verify/${token}?code=${code}</h1>`
+      html: `<h1>Confirm link: http://localhost:3000/verify/${token}?code=${code}</h1>`
     });
   }
 }

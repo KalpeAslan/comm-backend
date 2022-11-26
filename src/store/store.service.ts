@@ -1,12 +1,12 @@
 import {HttpException, Injectable} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { InjectRepository } from "@nestjs/typeorm";
-import { StoreEntity } from "../../entities/store.entity";
+import { StoreEntity } from "../entities/store.entity";
 import { Repository } from "typeorm";
 import { PrivateKeyService } from "../common/private-key/private-key.service";
 import { CreateStoreDto } from "./dto/createStore.dto";
 import {CreateProductDto} from "./dto/createProduct.dto";
-import {ProductEntity} from "../../entities/product.entity";
+import {ProductEntity} from "../entities/product.entity";
 
 @Injectable()
 export class StoreService {

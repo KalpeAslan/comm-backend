@@ -1,12 +1,11 @@
 import { Controller, Get, Param, Res } from "@nestjs/common";
-import { MessengerService } from "./messenger.service";
+import { CommunicationService } from "./communication.service";
 import { Response } from "express";
 
-@Controller("/api/v1/messenger")
-export class MessengerController {
+@Controller("/api/v1/communication")
+export class CommunicationController {
 
-  constructor(private readonly messengerService: MessengerService) {
-  }
+  constructor(private readonly messengerService: CommunicationService) {}
 
   @Get("/verify/:token/:code")
   async isMessageExist(

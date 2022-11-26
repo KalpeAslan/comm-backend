@@ -3,7 +3,7 @@ import { CreateStoreDto } from "./dto/createStore.dto";
 import { Response } from "express";
 import { UsersService } from "../users/users.service";
 import { StoreService } from "./store.service";
-import { StoreEntity } from "../../entities/store.entity";
+import { StoreEntity } from "../entities/store.entity";
 import {CreateProductDto} from "./dto/createProduct.dto";
 
 @Controller("/api/v1/store")

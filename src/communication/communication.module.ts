@@ -1,9 +1,9 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { MailerModule } from '@nestjs-modules/mailer';
-import { MessengerService } from './messenger.service';
-import { conf } from "../../../conf";
+import { CommunicationService } from './communication.service';
+import { conf } from "../../conf";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { MessageEntityEntity } from "../../entities/messageEntity.entity";
+import { MessageEntityEntity } from "../entities/messageEntity.entity";
 import { UsersModule } from "../users/users.module";
 
 
@@ -29,9 +29,9 @@ import { UsersModule } from "../users/users.module";
     }),
     forwardRef(() => UsersModule),
   ],
-  providers: [MessengerService],
-  exports: [MessengerService]
+  providers: [CommunicationService],
+  exports: [CommunicationService]
 })
-export class MessengerModule {
+export class CommunicationModule {
 
 }

@@ -3,9 +3,9 @@ import { UsersModule } from "../users/users.module";
 import { StoreController } from './store.controller';
 import { StoreService } from './store.service';
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { StoreEntity } from "../../entities/store.entity";
+import { StoreEntity } from "../entities/store.entity";
 import { CommonModule } from "../common/common.module";
-import {ProductEntity} from "../../entities/product.entity";
+import {ProductEntity} from "../entities/product.entity";
 
 @Module({
   imports: [

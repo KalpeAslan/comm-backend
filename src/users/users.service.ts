@@ -1,23 +1,23 @@
 import {forwardRef, Inject, Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
-import {UserEntity} from "../../entities/user.entity";
+import {UserEntity} from "../entities/user.entity";
 import {Repository} from "typeorm";
-import {CreateUserDto} from "../../dto/createUser.dto";
+import {CreateUserDto} from "../dto/createUser.dto";
 import {IPaginationOptions, paginate, Pagination} from "nestjs-typeorm-paginate";
-import {MessageDto} from "../../dto/message.dto";
-import {MessengerService} from "../messenger/messenger.service";
-import {IConfirmMessageResponse, IPassword} from "../../ts/common";
-import {AddressEntity} from "../../entities/addresses.entity";
+import {MessageDto} from "../dto/message.dto";
+import {CommunicationService} from "../communication/communication.service";
+import {IConfirmMessageResponse, IPassword} from "../ts/common";
+import {AddressEntity} from "../entities/addresses.entity";
 import {AddAddressDto} from "./addAddressDto.dto";
-import {UpdateUserDto} from "../../dto/updateUser.dto";
+import {UpdateUserDto} from "../dto/updateUser.dto";
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly usersRepository: Repository<UserEntity>,
-        @Inject(forwardRef(() => MessengerService))
-        private readonly messengerService: MessengerService,
+        @Inject(forwardRef(() => CommunicationService))
+        private readonly messengerService: CommunicationService,
         @InjectRepository(AddressEntity)
         private readonly addressesEntityRepository: Repository<AddressEntity>
     ) {
