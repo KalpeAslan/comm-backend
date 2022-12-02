@@ -10,6 +10,7 @@ import {ProductsModule} from './products/products.module';
 import {ConfigModule} from "@nestjs/config";
 import {config} from "./configs/config";
 import {AuthModule} from './auth/auth.module';
+import { BlockchainModule } from './blockchain/blockchain.module';
 
 @Module({
     imports: [
@@ -19,7 +20,8 @@ import {AuthModule} from './auth/auth.module';
         }),
         TypeOrmModule.forRoot(ormConfig as unknown as TypeOrmModuleOptions),
         TransactionsModule, UsersModule, CommunicationModule, StoreModule, ProductsModule,
-        AuthModule
+        AuthModule,
+        BlockchainModule
     ],
     controllers: [],
     providers: [],

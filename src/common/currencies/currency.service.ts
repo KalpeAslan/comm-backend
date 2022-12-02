@@ -29,6 +29,10 @@ export class CurrencyService {
         return this.currencyRepository.findOne({id})
     }
 
+    getCurrencyBySymbol(symbol: string) {
+        return this.currencyRepository.findOne({symbol})
+    }
+
     getAllCurrencies() {
         return this.currencyRepository.find()
     }
