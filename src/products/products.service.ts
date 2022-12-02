@@ -4,13 +4,16 @@ import {ProductEntity} from "../entities/product.entity";
 import {AddProductDto} from "./dto/add-product.dto";
 import {Repository} from "typeorm";
 import {UsersService} from "../users/users.service";
+import {CurrencyEntity} from "../entities/currency.entity";
 
 @Injectable()
 export class ProductsService {
     constructor(
         @InjectRepository(ProductEntity)
         private readonly productEntity: Repository<ProductEntity>,
-        private readonly userService: UsersService
+        private readonly userService: UsersService,
+        @InjectRepository(CurrencyEntity)
+        private readonly currencyEntity: Repository<CurrencyEntity>,
     ) {
     }
 
@@ -19,9 +22,11 @@ export class ProductsService {
         body: AddProductDto,
     ) {
         const user = await this.userService.findOrCreateUserByEthAddress(body.ethAddress)
+
         return this.productEntity.save({
             ...body,
-            user
+            user,
+            currency: +body.currencyId
         })
     }
 
@@ -34,6 +39,7 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
+                    currency: 'p.currency'
                 },
             }
         })
@@ -46,6 +52,7 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
+                    currency: 'p.currency',
                 },
             }
         })
@@ -60,6 +67,7 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
+                    currency: 'p.currency',
                 },
             }
         })

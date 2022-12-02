@@ -1,5 +1,14 @@
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import {UserEntity} from "./user.entity";
+import {CurrencyEntity} from "./currency.entity";
 
 @Entity('product')
 export class ProductEntity{
@@ -18,8 +27,9 @@ export class ProductEntity{
     @Column()
     price: string
 
-    @Column({nullable: true})
-    currency: string
+    @ManyToOne(() => CurrencyEntity, currency => currency.id)
+    @JoinColumn()
+    currency: number
 
     @Column({nullable: true})
     files: string

@@ -8,12 +8,14 @@ import { AddressEntity } from "../entities/addresses.entity";
 import {ProductTransactionsEntity} from "../entities/product-transactions.entity";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductsModule} from "../products/products.module";
+import {CommonModule} from "../common/common.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransactionEntity,UserEntity, AddressEntity, ProductTransactionsEntity]),
     UsersModule,
-    ProductsModule
+    ProductsModule,
+    CommonModule
   ],
   controllers: [TransactionsController],
   providers: [TransactionsService],

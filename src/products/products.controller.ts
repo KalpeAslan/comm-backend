@@ -35,6 +35,14 @@ export class ProductsController {
         return this.productsService.addProduct(body)
     }
 
+    @Get('/my/:ethAddress')
+    async getAllAddressProducts(
+        @Param('ethAddress') ethAddress: string
+    ) {
+        const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
+        return this.productsService.getUserProducts(user.id)
+    }
+
     @Get('')
     async getAllProducts() {
         return this.productsService.getAllProducts()
@@ -48,12 +56,6 @@ export class ProductsController {
         return this.productsService.getProductById(id)
     }
 
-    @Get('/:ethAddress')
-    async getAllAddressProducts(
-        @Param('ethAddress') ethAddress: string
-    ) {
-        const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
-        return this.productsService.getUserProducts(user.id)
-    }
+
 
 }
