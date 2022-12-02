@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { EMessageTypes } from "src/communication/constants/communication.constants";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 
 @Entity('messages')
@@ -7,23 +8,19 @@ export class MessageEntityEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'timestamp'})
-  date: string;
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  created_at: Date;
 
-  //mail or phone
-  @Column({length: 254})
-  type: string;
+  @Column({enum: EMessageTypes})
+  type: EMessageTypes;
 
   @ManyToOne( () => UserEntity, user => user.id)
   user: UserEntity
 
-  @Column({length: 6})
-  code: string;
-
-  @Column({length: 10})
-  token: string;
+  @Column({type: 'varchar', length: 7})
+  code: number;
 
   @Column({type: 'boolean', default: false})
-  state: boolean
-
+  status: boolean
 }
+

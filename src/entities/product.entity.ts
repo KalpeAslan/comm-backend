@@ -18,7 +18,7 @@ export class ProductEntity{
     @Column()
     price: string
 
-    @Column()
+    @Column({nullable: true})
     currency: string
 
     @Column({nullable: true})

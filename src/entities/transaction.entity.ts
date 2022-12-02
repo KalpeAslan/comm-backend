@@ -22,7 +22,7 @@ export class TransactionEntity {
   @Column({ type: "numeric" })
   value: number;
 
-  @Column({length: 20})
+  @Column({length: 20, nullable: true})
   currency: string
 
   @Column({type: 'text', nullable: true})

@@ -1,4 +1,5 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {Exclude} from "class-transformer";
 
 @Entity("users")
 export class UserEntity {
@@ -6,8 +7,13 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @Column({ length: 255 })
   password: string;
+
+  @Exclude()
+  @Column({nullable: true})
+  refresh_token: string
 
   @Column({ type: "timestamp", name: "birth_date", nullable: true })
   birthDate: Date;

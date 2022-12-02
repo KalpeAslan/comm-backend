@@ -1,154 +1,70 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { MailerService } from "@nestjs-modules/mailer";
-import { conf } from "../../conf";
+import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MessageEntityEntity } from "../entities/messageEntity.entity";
-import { Repository } from "typeorm";
+import { Repository, UpdateResult } from "typeorm";
 import { UserEntity } from "../entities/user.entity";
-import { sha256 } from "js-sha256";
-import { MessageDto } from "../dto/message.dto";
-import { utils } from "../utils/utils";
-import { IConfirmMessageResponse } from "../ts/common";
-import { UsersService } from "../users/users.service";
-import { DeleteResult } from "typeorm/query-builder/result/DeleteResult";
-import sgMail from '@sendgrid/mail'
 import {communicationConfig} from "../configs/communication.config";
-import {MailService} from "@sendgrid/mail/src/mail";
-
-interface ISendMail {
-  to: string;
-  code: string;
-  token: string;
-}
+import { ICommunicationConfig } from '../ts/communication.types';
+import { EMessageTypes } from 'src/communication/constants/communication.constants';
+import { MailerService } from './mailer.service';
 
 @Injectable()
 export class CommunicationService {
-  private readonly sendGridService: MailService
-  private readonly senderMail: string
 
+  private readonly config: ICommunicationConfig
 
   constructor(
-    private readonly mailerService: MailerService,
     @InjectRepository(MessageEntityEntity)
     private readonly messagesRepository: Repository<MessageEntityEntity>,
-    @Inject(forwardRef(() => UsersService))
-    private readonly usersService: UsersService
+    private readonly mailerService: MailerService
   ) {
-    this.sendGridService = sgMail
-    this.sendGridService.setApiKey(communicationConfig().sendgridApiKey)
-    this.senderMail = communicationConfig().emailSender;
+    this.config = communicationConfig();
   }
 
-  public async getUserByToken(token: string): Promise<UserEntity> {
-    return await this.messagesRepository.findOne({
-      join: {
-        alias: "message",
-        leftJoinAndSelect: {
-          user: "message.user"
-        }
-      },
-      where: {
-        token
-      }
-    })
-      .then(value => value ? value.user : undefined);
 
-  }
+  //Setters
 
-  public async getMessageByToken(token: string): Promise<MessageEntityEntity> {
-    return (await this.messagesRepository.findOne({ token }));
-  }
-
-  public async isMessageExist(token: string): Promise<boolean> {
-    return !!(await this.messagesRepository.findOne({ token }));
-  }
-
-  public async generateMessage(user: UserEntity, type: "mail" | "phone"): Promise<string> {
-    const code: string = sha256(user.id + new Date().getTime().toString()).slice(0, 6);
-    const token: string = sha256(code).slice(0, 10);
+  public async sendSignUpMessage(user: UserEntity, type: EMessageTypes): Promise<number> {
+    const code: number = (Math.floor(Math.random() * (9000000)) + 1000000);
     const message = {
       user: user,
       date: new Date().toString(),
       code,
-      token,
       type,
-      state: false
+      status: false
     };
 
-
-    await this.messagesRepository.delete({ user: user });
+    // await this.messagesRepository.delete({ user: user });
     await this.messagesRepository.save(message);
 
-    if (type === "mail") await this.sendMail({
+    if (type === EMessageTypes.Email) await this.mailerService.sendMail({
       to: user.email,
       code,
-      token
-    }).then(console.log);
+    });
 
-    return token;
+    return code;
   }
 
-  public async confirmMessageAndGetUser(messageDto: MessageDto): Promise<IConfirmMessageResponse> {
+
+  public async confirmCodeMessage(code: number): Promise<UserEntity> {
     const message = await this.messagesRepository.findOne({
-      join: {
-        alias: "message",
-        leftJoinAndSelect: {
-          user: "message.user"
-        }
-      },
       where: {
-        token: messageDto.token
+        code
+      },
+      join: {
+        alias: 'm',
+        leftJoinAndSelect: {
+          user: 'm.user' 
+        }
       }
-    });
+    })
 
-    if (!message) return {
-      message: "Message token is not found",
-      state: false
-    };
+    if(!message) throw new HttpException('Code is not found', 404)
+    
+    await this.messagesRepository.delete({id: message.id})
+    
+    return message.user
 
-    const timeDifference = utils.getDifferentTime(new Date(), new Date(message.date));
-    if (timeDifference > 60) {
-      await this.messagesRepository.delete({ token: messageDto.token });
-      return {
-        message: "Message is overdue",
-        state: false
-      };
-    }
-
-    if (message.code !== messageDto.code) return {
-      message: "Code is wrong!",
-      state: false
-    };
-
-    const user = { ...message.user };
-    await this.messagesRepository.delete({ token: messageDto.token });
-    return {
-      message: "Confirmed!",
-      state: true,
-      user
-    };
   }
 
-
-  public async deleteMessage(messageDto: MessageDto): Promise<DeleteResult> {
-    return  await this.messagesRepository.delete({ token: messageDto.token });
-  }
-
-  public async deleteAll() {
-    console.log(
-        await this.messagesRepository.find()
-    )
-    return await this.messagesRepository.delete(1)
-  }
-
-
-
-  private async sendMail({ code, to, token }: ISendMail) {
-    return await this.sendGridService.send({
-      to,
-      from: this.senderMail,
-      subject: "Confirm Message COMM",
-      html: `<h1>Confirm link: http://localhost:3000/verify/${token}?code=${code}</h1>`
-    });
-  }
 }

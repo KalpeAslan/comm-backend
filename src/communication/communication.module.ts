@@ -1,37 +1,15 @@
-import { forwardRef, Module } from "@nestjs/common";
-import { MailerModule } from '@nestjs-modules/mailer';
+import { Module } from "@nestjs/common";
 import { CommunicationService } from './communication.service';
-import { conf } from "../../conf";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MessageEntityEntity } from "../entities/messageEntity.entity";
-import { UsersModule } from "../users/users.module";
-
-
+import { MailerService } from "./mailer.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([MessageEntityEntity]),
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: conf.userGmail,
-          pass: conf.passwordGmail
-        }
-      },
-
-      defaults: {
-        from: conf.passwordGmail,
-      },
-      preview: true,
-    }),
-    forwardRef(() => UsersModule),
+  TypeOrmModule.forFeature([MessageEntityEntity]),
   ],
-  providers: [CommunicationService],
+  providers: [CommunicationService, MailerService],
   exports: [CommunicationService]
 })
 export class CommunicationModule {
-
 }

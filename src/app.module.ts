@@ -5,22 +5,23 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import ormConfig from 'ormconfig.json'
 import {TypeOrmModuleOptions} from "@nestjs/typeorm/dist/interfaces/typeorm-options.interface";
 import {CommunicationModule} from './communication/communication.module';
-import {CommunicationController} from './communication/communication.controller';
 import {StoreModule} from "./store/store.module";
 import {ProductsModule} from './products/products.module';
 import {ConfigModule} from "@nestjs/config";
 import {config} from "./configs/config";
+import {AuthModule} from './auth/auth.module';
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            load: [config],
+            isGlobal: true
+        }),
         TypeOrmModule.forRoot(ormConfig as unknown as TypeOrmModuleOptions),
         TransactionsModule, UsersModule, CommunicationModule, StoreModule, ProductsModule,
-        ConfigModule.forRoot({
-          load: [config],
-          isGlobal: true
-        })
+        AuthModule
     ],
-    controllers: [CommunicationController],
+    controllers: [],
     providers: [],
 })
 export class AppModule {
