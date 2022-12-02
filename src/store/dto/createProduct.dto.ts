@@ -1,5 +1,5 @@
 import {ProductEntity} from "../../entities/product.entity";
-import {IsEthereumAddress, IsNotEmpty, IsString} from "class-validator";
+import {IsEthereumAddress, IsNotEmpty, IsNumber, IsString} from "class-validator";
 
 export class CreateProductDto extends ProductEntity {
     @IsNotEmpty()
@@ -13,8 +13,8 @@ export class CreateProductDto extends ProductEntity {
 
 
     @IsNotEmpty()
-    @IsString()
-    currency: string
+    @IsNumber()
+    currencyId: number
 
 
     @IsNotEmpty()

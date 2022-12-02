@@ -11,6 +11,7 @@ import {ProductTransactionsEntity} from "../entities/product-transactions.entity
 import { CurrencyService } from "src/common/currencies/currency.service";
 import { EGrow, EPeriods } from "./constants/transaction.constants";
 import { getDateFromPeriod } from "./utils/transactions.utils";
+import { CurrencyEntity } from "src/entities/currency.entity";
 
 @Injectable()
 export class TransactionsService {
@@ -63,11 +64,22 @@ export class TransactionsService {
 
     async getTransactionsMeta(userId: number) {
 
+        console.log('getTransactionsMeta');
         const cashFlow = await this.getTransactionsCashFlow(userId)
+        console.log('cashFlow');
+        
         const transactionsCount = await this.getTransactionsCount(userId)
+        console.log('transactionsCount');
+        
         const clients = await this.getClientsCount(userId)
+        console.log('getClientsCount');
+        
         const incomeTotal = await this.getIncome(userId, EPeriods.Month)
+        console.log('getIncome');
+        
         const productsIncomes = await this.getProductIncomes(userId)
+        console.log('productsIncomes');
+        
 
         return {
             cashFlow,
@@ -109,8 +121,6 @@ export class TransactionsService {
                 }
             }
         })
-        console.log(userId)
-        console.log(txIncomes)
 
         data.incomes = [
             ...data.incomes,
