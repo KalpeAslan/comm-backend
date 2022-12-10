@@ -5,6 +5,9 @@ import { UsersService } from "../users/users.service";
 import { StoreService } from "./store.service";
 import { StoreEntity } from "../entities/store.entity";
 import {CreateProductDto} from "./dto/createProduct.dto";
+import {UserEntity} from "../entities/user.entity";
+import {User} from "../users/decorators/user.decorator";
+import {Firewall} from "../auth/decorators/firewall.decorator";
 
 @Controller("/api/v1/store")
 export class StoreController {
@@ -38,13 +41,15 @@ export class StoreController {
   }
 
 
+  @Firewall()
   @Post('create-product')
   async createProduct(
       @Body() data: CreateProductDto,
-      @Res() response: Response
+      @Res() response: Response,
+      @User() user: UserEntity
   ) {
     return response.send({
-      message: await this.storeService.createProduct(data),
+      message: await this.storeService.createProduct(user, data),
       status: 200
     }).status(200)
   }

@@ -8,7 +8,6 @@
   "scripts": {
     "typeorm": "node_modules/.bin/typeorm",
     "typeorm:migration-run": "npm run typeorm -- migration:run --config ormconfig.js",
-    "typeorm:migration-generate": "npm run typeorm -- migration:generate",
     "migrate": "ts-node ./node_modules/.bin/typeorm migration:generate",
     "revert": "ts-node ./node_modules/.bin/typeorm migrations:revert",
     "prebuild": "rimraf dist",
@@ -26,6 +25,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^8.0.0",

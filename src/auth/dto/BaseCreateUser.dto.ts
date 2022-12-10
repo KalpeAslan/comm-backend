@@ -1,11 +1,6 @@
-import {IsEthereumAddress, IsNotEmpty, IsString} from "class-validator";
+import {IsNotEmpty, IsString} from "class-validator";
 
 export class BaseCreateUserDto{
-
-    @IsNotEmpty()
-    @IsString()
-    @IsEthereumAddress()
-    address: string
 
     @IsNotEmpty()
     @IsString()

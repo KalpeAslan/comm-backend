@@ -8,9 +8,6 @@ export class ProductTransactionDto extends TransactionDto{
   productId: number
 
   @IsEmpty()
-  buyer: UserEntity
-
-  @IsEmpty()
   seller: UserEntity
 
   @IsEmpty()

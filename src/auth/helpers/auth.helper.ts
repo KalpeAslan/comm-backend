@@ -2,7 +2,7 @@ import {HttpException, HttpStatus, Injectable, UnauthorizedException} from "@nes
 import {InjectRepository} from "@nestjs/typeorm";
 import {UserEntity} from "../../entities/user.entity";
 import {Repository} from "typeorm";
-import {JwtService, JwtSignOptions} from "@nestjs/jwt";
+import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from 'bcryptjs';
 import {UsersService} from "../../users/users.service";
 import {authConfig} from "../../configs/auth.config";
@@ -30,7 +30,6 @@ export class AuthHelper {
             this.jwtService.signAsync(
                 {
                     sub: user.id,
-                    ethAddress: user.address,
                 },
                 {
                     secret: this.config.jwtSecretKey,
@@ -40,7 +39,6 @@ export class AuthHelper {
             this.jwtService.signAsync(
                 {
                     sub: user.id,
-                    ethAddress: user.address,
                 },
                 {
                     secret: this.config.jwtSecretKey,

@@ -7,6 +7,7 @@ import { MulterModule } from "@nestjs/platform-express";
 import { conf } from "../../conf";
 import { AddressEntity } from "../entities/addresses.entity";
 import { CommonModule } from "../common/common.module";
+import { WalletService } from './wallet/wallet.service';
 
 @Module({
   imports: [
@@ -17,8 +18,8 @@ import { CommonModule } from "../common/common.module";
     CommonModule
   ],
   controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService]
+  providers: [UsersService, WalletService],
+  exports: [UsersService, WalletService]
 })
 export class UsersModule {
 }

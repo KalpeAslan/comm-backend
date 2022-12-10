@@ -1,5 +1,5 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
-import {ECurrencyNetworks} from "../constants/currency.constants";
+import {ENetwork} from "../constants/common.constants";
 
 @Entity()
 export class CurrencyEntity {
@@ -28,7 +28,7 @@ export class CurrencyEntity {
     @Column()
     address: string
 
-    @Column({enum: ECurrencyNetworks})
+    @Column({enum: ENetwork})
     network: string
 
     @Column({nullable: true})

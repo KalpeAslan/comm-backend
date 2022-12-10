@@ -34,13 +34,12 @@ export class CommunicationService {
       status: false
     };
 
-    // await this.messagesRepository.delete({ user: user });
     await this.messagesRepository.save(message);
 
-    if (type === EMessageTypes.Email) await this.mailerService.sendMail({
+    if (type === EMessageTypes.Email) await this.mailerService.sendMailNodeMailer({
       to: user.email,
       code,
-    });
+    }).then(console.log)
 
     return code;
   }

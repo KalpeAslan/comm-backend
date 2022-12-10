@@ -1,5 +1,5 @@
 import {IsEnum, IsNotEmpty, IsNumber, IsString} from "class-validator";
-import {ECurrencyNetworks} from "../constants/currency.constants";
+import {ENetwork} from "../constants/common.constants";
 
 export class CurrencyDto {
     @IsString()
@@ -31,7 +31,7 @@ export class CurrencyDto {
     address: string
 
     @IsNotEmpty()
-    @IsEnum(ECurrencyNetworks)
+    @IsEnum(ENetwork)
     network: string
 
     @IsString()

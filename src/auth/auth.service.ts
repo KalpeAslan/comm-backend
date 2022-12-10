@@ -31,8 +31,8 @@ export class AuthService {
 
     //Register
     public async registerByEmail(body: RegisterEmailDto): Promise<any> {
-        const { email, password, address }: RegisterEmailDto = body;
-        let user: UserEntity = await this.usersRepository.findOne({ where: { address: address.toLocaleLowerCase(), email } });
+        const { email, password }: RegisterEmailDto = body;
+        let user: UserEntity = await this.usersRepository.findOne({ where: {  email } });
 
         if (user) {
             throw new HttpException('Conflict', HttpStatus.CONFLICT);
@@ -42,10 +42,9 @@ export class AuthService {
 
         user.email = email;
         user.password = this.helper.encodePassword(password);
-        user.address = address;
 
         await this.usersRepository.save(user);
-        this.communicationService.sendSignUpMessage(user, EMessageTypes.Email)
+        await this.communicationService.sendSignUpMessage(user, EMessageTypes.Email)
         return user;
     }
 
@@ -82,9 +81,6 @@ export class AuthService {
         )
     }
 
-
-
-
     //Tokens
 
     public async refreshAndSaveTokens(user: UserEntity): Promise<any> {
@@ -97,19 +93,5 @@ export class AuthService {
                 refresh_token: tokens.refreshToken
             })
         return tokens
-    }
-
-
-
-    async removeRefreshToken(address: string) {
-        const user = await this.userService.findUserByEthAddress(address);
-
-        if (!user) {
-            throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
-        }
-
-        return this.usersRepository.update({ address }, {
-            refresh_token: null
-        });
     }
 }

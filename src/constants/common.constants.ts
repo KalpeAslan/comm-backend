@@ -1,4 +1,4 @@
-export enum ECurrencyNetworks {
+export enum ENetwork {
     Mainnet = 'Mainnet',
     Goerli = 'Goerli'
 }

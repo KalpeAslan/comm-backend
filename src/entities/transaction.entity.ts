@@ -4,12 +4,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from "typeorm";
-import { UserEntity } from "./user.entity";
 import {CurrencyEntity} from "./currency.entity";
+import {AddressEntity} from "./addresses.entity";
 
 @Entity("transactions")
 export class TransactionEntity {
@@ -37,11 +36,11 @@ export class TransactionEntity {
   @Column({type: 'text', nullable: true})
   additionalInfo
 
-  @ManyToOne(() => UserEntity, user => user.id)
-  from: UserEntity;
+  @ManyToOne(() => AddressEntity, user => user.id)
+  from: AddressEntity;
 
-  @ManyToOne(() => UserEntity, user => user.id)
-  to: UserEntity;
+  @ManyToOne(() => AddressEntity, user => user.id)
+  to: AddressEntity;
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   created_at: Date;

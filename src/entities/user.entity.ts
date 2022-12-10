@@ -54,9 +54,6 @@ export class UserEntity {
   @Column({ length: 100, nullable: true })
   city: string;
 
-  @Column()
-  address: string
-
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   created_at: Date;
 

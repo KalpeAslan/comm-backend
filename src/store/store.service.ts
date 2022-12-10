@@ -7,6 +7,7 @@ import { PrivateKeyService } from "../common/private-key/private-key.service";
 import { CreateStoreDto } from "./dto/createStore.dto";
 import {CreateProductDto} from "./dto/createProduct.dto";
 import {ProductEntity} from "../entities/product.entity";
+import {UserEntity} from "../entities/user.entity";
 
 @Injectable()
 export class StoreService {
@@ -26,7 +27,7 @@ export class StoreService {
   }
 
   public async createStore(createStoreDto: CreateStoreDto) {
-    const userEntity = await this.userService.getUserById(createStoreDto.ownerId);
+    const userEntity = await this.userService.findUserById(createStoreDto.ownerId);
     console.log(createStoreDto)
     console.log(userEntity)
     const storeEntity: StoreEntity = await this.storeEntity.save({
@@ -49,9 +50,8 @@ export class StoreService {
     })
   }
 
-  async createProduct(productDto: CreateProductDto) {
+  async createProduct(user: UserEntity, productDto: CreateProductDto) {
 
-    const user = await this.userService.getUserByAddress(productDto.address)
 
     if(!user) {
       throw new HttpException('User not found', 404)
@@ -60,11 +60,8 @@ export class StoreService {
     const product = {
       ...productDto
     }
-    delete productDto.address
     product.user = user
 
-    const data = await this.productEntity.save(product)
-    console.log(data)
-    return data
+    return await this.productEntity.save(product)
   }
 }

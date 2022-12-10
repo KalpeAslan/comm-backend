@@ -19,9 +19,5 @@ export class AddProductDto {
     @IsString()
     status: string
 
-
-    @IsEmpty()
-    ethAddress: string
-
     files: any
 }

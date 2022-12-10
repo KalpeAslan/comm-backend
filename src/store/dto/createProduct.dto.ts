@@ -20,9 +20,4 @@ export class CreateProductDto extends ProductEntity {
     @IsNotEmpty()
     @IsString()
     price: string
-
-    @IsNotEmpty()
-    @IsString()
-    @IsEthereumAddress()
-    address: string
 }

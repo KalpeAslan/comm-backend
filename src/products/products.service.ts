@@ -5,6 +5,7 @@ import {AddProductDto} from "./dto/add-product.dto";
 import {Repository} from "typeorm";
 import {UsersService} from "../users/users.service";
 import {CurrencyEntity} from "../entities/currency.entity";
+import {UserEntity} from "../entities/user.entity";
 
 @Injectable()
 export class ProductsService {
@@ -19,10 +20,9 @@ export class ProductsService {
 
 
     public async addProduct(
+        user: UserEntity,
         body: AddProductDto,
     ) {
-        const user = await this.userService.findOrCreateUserByEthAddress(body.ethAddress)
-
         return this.productEntity.save({
             ...body,
             user,

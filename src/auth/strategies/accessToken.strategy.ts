@@ -6,7 +6,6 @@ import { UsersService } from 'src/users/users.service';
 
 type JwtPayload = {
     sub: number
-    ethAddress: string
     iat: number,
     exp: number
 };
@@ -26,6 +25,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     async validate(payload: JwtPayload) {
-        return await this.usersService.findOrCreateUserByEthAddress(payload.ethAddress);
+        return await this.usersService.findUserById(payload.sub);
     }
 }

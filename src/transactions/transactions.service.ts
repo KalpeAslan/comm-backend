@@ -8,10 +8,12 @@ import {UserEntity} from "../entities/user.entity";
 import {AddressEntity} from "../entities/addresses.entity";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionsEntity} from "../entities/product-transactions.entity";
-import { CurrencyService } from "src/common/currencies/currency.service";
-import { EGrow, EPeriods } from "./constants/transaction.constants";
-import { getDateFromPeriod } from "./utils/transactions.utils";
-import { CurrencyEntity } from "src/entities/currency.entity";
+import {CurrencyService} from "src/common/currencies/currency.service";
+import {EGrow, EPeriods} from "./constants/transaction.constants";
+import {getDateFromPeriod} from "./utils/transactions.utils";
+import {CurrencyEntity} from "src/entities/currency.entity";
+import {WalletService} from "../users/wallet/wallet.service";
+import {ENetwork} from "../constants/common.constants";
 
 @Injectable()
 export class TransactionsService {
@@ -19,6 +21,7 @@ export class TransactionsService {
         @InjectRepository(TransactionEntity)
         private readonly transactionsRepository: Repository<TransactionEntity>,
         private readonly userService: UsersService,
+        private readonly walletService: WalletService,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(AddressEntity)
@@ -40,8 +43,8 @@ export class TransactionsService {
 
     async saveTransaction(transactionDto: TransactionDto): Promise<TransactionEntity> {
 
-        const from: UserEntity = await this.userService.findOrCreateUserByEthAddress(transactionDto.fromAddress);
-        const to: UserEntity = await this.userService.findOrCreateUserByEthAddress(transactionDto.toAddress);
+        const from = await this.walletService.findOrCreateAddressEntityByEthAddress(transactionDto.fromAddress, ENetwork.Goerli);
+        const to = await this.walletService.findOrCreateAddressEntityByEthAddress(transactionDto.toAddress, ENetwork.Goerli);
         const transaction = {
             ...transactionDto,
             timestamp: new Date(+transactionDto.timestampString * 1000).toString(),

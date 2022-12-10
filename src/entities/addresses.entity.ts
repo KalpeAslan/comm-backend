@@ -1,17 +1,19 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import { UserEntity } from "./user.entity";
+import {ENetwork} from "../constants/common.constants";
 
 @Entity("addresses")
 export class AddressEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 42 })
-  address: string;
+  @Column({ length: 42, unique: true })
+  walletAddress: string;
 
-  @ManyToOne(() => UserEntity, user => user.id)
+  @Column({enum:ENetwork})
+  network: string
+
+  @ManyToOne(() => UserEntity, user => user.id, {nullable: true})
+  @JoinColumn()
   user: UserEntity;
-
-  @Column({ type: "boolean", default: false })
-  confirmed: boolean;
 }

@@ -9,13 +9,18 @@ import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionDto} from "../dto/product-transaction.dto";
 import {ProductsService} from "../products/products.service";
 import {EPeriods} from "./constants/transaction.constants";
+import {UserEntity} from "../entities/user.entity";
+import {User} from "../users/decorators/user.decorator";
+import {Firewall} from "../auth/decorators/firewall.decorator";
+import {WalletService} from "../users/wallet/wallet.service";
 
 @Controller("/api/v1/transactions")
 export class TransactionsController {
   constructor(
     private readonly transactionService: TransactionsService,
     private readonly userService: UsersService,
-    private readonly productService: ProductsService
+    private readonly productService: ProductsService,
+    private readonly walletService: WalletService
   ) {
   }
 
@@ -33,40 +38,39 @@ export class TransactionsController {
     }).status(200);
   }
 
-  @Get('/meta/:ethAddress')
+  @Firewall()
+  @Get('/meta')
   async getTransactionsCount(
-      @Param('ethAddress') ethAddress: string
+      @User() user: UserEntity
   ) {
-    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
     return this.transactionService.getTransactionsMeta(user.id)
   }
 
-  @Get('/getClients/:ethAddress')
+  @Firewall()
+  @Get('/getClients')
   async getClients(
-      @Param('ethAddress') ethAddress: string
+      @User() user: UserEntity
   ) {
-    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
     return this.transactionService.getClients(user.id)
   }
 
-  @Get('/getIncomes/:ethAddress')
+  @Firewall()
+  @Get('/getIncomes')
   async getIncomes(
-      @Param('ethAddress') ethAddress: string,
-      @Query('period', new DefaultValuePipe(EPeriods.Month)) period: EPeriods
+      @Query('period', new DefaultValuePipe(EPeriods.Month)) period: EPeriods,
+      @User() user: UserEntity
   ) {
-    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
     return this.transactionService.getIncome(user.id, EPeriods.Week)
   }
 
 
-  @Get('/my/:ethAddress')
+  @Firewall()
+  @Get('/my')
   async getMyTransactions(
-      @Param('ethAddress') ethAddress: string
+      @User() user: UserEntity
   ) {
-    const user = await this.userService.findOrCreateUserByEthAddress(ethAddress)
     return this.transactionService.getMyTransactions(user.id)
   }
-
 
 
   @Get("/:txnHash")
@@ -87,20 +91,21 @@ export class TransactionsController {
   }
 
 
+  @Firewall()
   @Post('/buy-product')
   async buyProductTx(
       @Body() transactionDto: ProductTransactionDto,
+      @User() user: UserEntity,
       @Res() response: Response
   ) {
     const tx = await this.transactionService.saveTransaction(transactionDto)
-    const buyer = await this.userService.findOrCreateUserByEthAddress(transactionDto.fromAddress)
-    const seller = await this.userService.findOrCreateUserByEthAddress(transactionDto.toAddress)
+    const seller = await this.walletService.findUserByWalletAddress(transactionDto.toAddress)
     const product = await this.productService.getProductById(transactionDto.productId)
     return response.send({
       message: await this.transactionService.saveProductTransaction({
         transaction: tx,
         seller,
-        buyer,
+        user,
         product
       })
     })
