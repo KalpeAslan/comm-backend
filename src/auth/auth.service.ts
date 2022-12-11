@@ -62,7 +62,10 @@ export class AuthService {
             throw new HttpException('No user found', HttpStatus.NOT_FOUND);
         }
 
-        if (!user.confirmed) throw new HttpException('Confirm Your Account', 403);
+        if (!user.confirmed) {
+            await this.communicationService.sendSignUpMessage(user, EMessageTypes.Email)
+            throw new HttpException('Confirm Your Account', 425);
+        }
 
         return this.refreshAndSaveTokens(user)
     }

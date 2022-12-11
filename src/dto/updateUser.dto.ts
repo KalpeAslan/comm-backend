@@ -1,19 +1,7 @@
-import { IsDate, IsEmpty, IsNotEmpty, IsString } from "class-validator";
+import { IsEmpty, IsNotEmpty, IsString } from "class-validator";
 import { UserEntity } from "../entities/user.entity";
 
-export class UpdateUserDto extends UserEntity {
-
-  @IsNotEmpty()
-  @IsString()
-  token: string
-
-  @IsNotEmpty()
-  @IsString()
-  code: string
-
-  @IsEmpty()
-  address: string;
-
+export class UpdateUserDto {
   @IsEmpty()
   password: string;
 
@@ -24,7 +12,6 @@ export class UpdateUserDto extends UserEntity {
   @IsNotEmpty()
   @IsString()
   passportId: string
-
 
   @IsNotEmpty()
   @IsString()
@@ -38,4 +25,5 @@ export class UpdateUserDto extends UserEntity {
   @IsString()
   country;
 
+  photo
 }

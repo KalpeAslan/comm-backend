@@ -14,6 +14,8 @@ import {getDateFromPeriod} from "./utils/transactions.utils";
 import {CurrencyEntity} from "src/entities/currency.entity";
 import {WalletService} from "../users/wallet/wallet.service";
 import {ENetwork} from "../constants/common.constants";
+import {ProductTransactionDto} from "../dto/product-transaction.dto";
+import {ProductsService} from "../products/products.service";
 
 @Injectable()
 export class TransactionsService {
@@ -22,19 +24,27 @@ export class TransactionsService {
         private readonly transactionsRepository: Repository<TransactionEntity>,
         private readonly userService: UsersService,
         private readonly walletService: WalletService,
+        private readonly productService: ProductsService,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(AddressEntity)
         private readonly addressEntity: Repository<AddressEntity>,
         @InjectRepository(ProductTransactionsEntity)
         private readonly productTransactionRepository: Repository<ProductTransactionsEntity>,
-        private readonly currencyService: CurrencyService
+
     ) {
     }
 
-    async saveProductTransaction(data: any) {
+    async saveProductTransaction(user: UserEntity, data: ProductTransactionDto) {
         try {
-            return this.productTransactionRepository.save(data)
+            const tx = await this.saveTransaction(data)
+            const seller = await this.userService.findUserById(data.sellerId)
+            const product = await this.productService.getProductById(data.productId)
+            return this.productTransactionRepository.save({
+                transaction: tx,
+                seller,
+                product
+            })
         } catch (e) {
             console.log(e)
             throw new HttpException('Something Wrong Product Transactions', 500)

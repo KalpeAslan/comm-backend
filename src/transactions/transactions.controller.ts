@@ -7,20 +7,15 @@ import { UsersService } from "../users/users.service";
 import { Pagination } from "nestjs-typeorm-paginate";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionDto} from "../dto/product-transaction.dto";
-import {ProductsService} from "../products/products.service";
 import {EPeriods} from "./constants/transaction.constants";
 import {UserEntity} from "../entities/user.entity";
 import {User} from "../users/decorators/user.decorator";
 import {Firewall} from "../auth/decorators/firewall.decorator";
-import {WalletService} from "../users/wallet/wallet.service";
 
 @Controller("/api/v1/transactions")
 export class TransactionsController {
   constructor(
     private readonly transactionService: TransactionsService,
-    private readonly userService: UsersService,
-    private readonly productService: ProductsService,
-    private readonly walletService: WalletService
   ) {
   }
 
@@ -98,16 +93,8 @@ export class TransactionsController {
       @User() user: UserEntity,
       @Res() response: Response
   ) {
-    const tx = await this.transactionService.saveTransaction(transactionDto)
-    const seller = await this.walletService.findUserByWalletAddress(transactionDto.toAddress)
-    const product = await this.productService.getProductById(transactionDto.productId)
     return response.send({
-      message: await this.transactionService.saveProductTransaction({
-        transaction: tx,
-        seller,
-        user,
-        product
-      })
+      message: await this.transactionService.saveProductTransaction(user, transactionDto)
     })
   }
 

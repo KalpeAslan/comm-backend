@@ -26,6 +26,15 @@ export class CommunicationService {
 
   public async sendSignUpMessage(user: UserEntity, type: EMessageTypes): Promise<number> {
     const code: number = (Math.floor(Math.random() * (9000000)) + 1000000);
+
+    const oldMessage = await this.messagesRepository.findOne({
+      status: false,
+      user
+    })
+    if(oldMessage) {
+      await this.messagesRepository.delete({id: oldMessage.id})
+    }
+
     const message = {
       user: user,
       date: new Date().toString(),
@@ -36,7 +45,7 @@ export class CommunicationService {
 
     await this.messagesRepository.save(message);
 
-    if (type === EMessageTypes.Email) await this.mailerService.sendMailNodeMailer({
+    if (type === EMessageTypes.Email) await this.mailerService.sendMail({
       to: user.email,
       code,
     }).then(console.log)
