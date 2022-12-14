@@ -1,5 +1,14 @@
-import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from "typeorm";
 import {Exclude} from "class-transformer";
+import {AddressEntity} from "./addresses.entity";
 
 @Entity("users")
 export class UserEntity {
@@ -54,9 +63,16 @@ export class UserEntity {
   @Column({ length: 100, nullable: true })
   city: string;
 
+  @Column({default: false, type: 'boolean'})
+  kyc: boolean
+
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   created_at: Date;
 
   @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
   updated_at: Date;
+
+
+  @OneToMany(() => AddressEntity, address => address.id, {nullable: true})
+  wallets: AddressEntity[]
 }

@@ -1,14 +1,14 @@
 import {
-  Body,
-  Controller,
-  DefaultValuePipe,
-  Get,
-  ParseIntPipe, Patch,
-  Put,
-  Query,
-  Res,
-  UploadedFile,
-  UseInterceptors,
+    Body,
+    Controller,
+    DefaultValuePipe,
+    Get,
+    ParseIntPipe, Patch, Post,
+    Put,
+    Query,
+    Res,
+    UploadedFile,
+    UseInterceptors,
 } from "@nestjs/common";
 import {UsersService} from "./users.service";
 import {Response} from "express";
@@ -20,6 +20,7 @@ import {diskStorage} from "multer";
 import {editFileName, imageFileFilter} from "../products/utils/file-upload.utils";
 import {UpdateUserDto} from "../dto/updateUser.dto";
 import {ChangePasswordDto} from "./dto/change-password.dto";
+import {SaveStoreDto} from "./dto/save-store.dto";
 
 
 @Controller("/users")
@@ -63,6 +64,15 @@ export class UsersController {
         @Body() body: ChangePasswordDto
     ) {
         return this.userService.changePassword(user, body)
+    }
+
+    @Firewall()
+    @Post('/saveStore')
+    saveStore(
+        @User() user: UserEntity,
+        @Body() body: SaveStoreDto
+    ) {
+        return this.userService.saveStore(user, body)
     }
 
     @Get("/")

@@ -23,11 +23,14 @@ export class UniswapService {
             const tokenInputInfo = await this.currencyService.getCurrencyBySymbol(tokenFrom)
             const tokenOutputInfo = await this.currencyService.getCurrencyBySymbol(tokenTo)
             const tokenOutput = new Token(chainID, tokenOutputInfo.address, +tokenOutputInfo.decimals);
+            console.log('tokenOutput')
             let decimals = +tokenInputInfo.decimals
             const tokenInput = new Token(chainID, tokenInputInfo.address, decimals)
+            console.log('tokenInput')
             let value = amount * 10 ** decimals
             const tokenInputAmount = new TokenAmount(tokenInput, String(value));
             const pair = await Fetcher.fetchPairData(tokenInput, tokenOutput)
+            console.log('pair')
             const route = new Route([pair], tokenInput);
             const trade = new Trade(route, tokenInputAmount, TradeType.EXACT_INPUT);
             const slippageTolerance = new Percent('50', '10000');

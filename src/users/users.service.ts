@@ -7,6 +7,9 @@ import {AddressEntity} from "../entities/addresses.entity";
 import {UpdateUserDto} from "../dto/updateUser.dto";
 import {ChangePasswordDto} from "./dto/change-password.dto";
 import * as bcrypt from 'bcryptjs';
+import {SaveStoreDto} from "./dto/save-store.dto";
+import {StoreEntity} from "../entities/store.entity";
+import {WalletService} from "./wallet/wallet.service";
 
 @Injectable()
 export class UsersService {
@@ -14,7 +17,10 @@ export class UsersService {
         @InjectRepository(UserEntity)
         private readonly usersRepository: Repository<UserEntity>,
         @InjectRepository(AddressEntity)
-        private readonly addressesEntityRepository: Repository<AddressEntity>
+        private readonly addressesEntityRepository: Repository<AddressEntity>,
+        @InjectRepository(StoreEntity)
+        private readonly storeEntity: Repository<StoreEntity>,
+        private walletService: WalletService
     ) {
     }
 
@@ -55,6 +61,29 @@ export class UsersService {
         return this.usersRepository.findOne({where: {
             refresh_token
         }})
+    }
+
+    async saveStore(user: UserEntity, dto: SaveStoreDto) {
+
+        const store = await this.storeEntity.findOne({ownerId: user.id})
+        const walletAddress = dto.walletAddress
+        delete dto.walletAddress;
+
+        if(store) {
+            await this.storeEntity.update({ownerId: user.id},{
+                ...dto
+            })
+        } else {
+            await this.storeEntity.save({
+                ownerId: user,
+                ...dto
+            })
+        }
+
+        await this.walletService.saveWalletAddress(user, walletAddress)
+        return {
+            message: 'Store is saved'
+        }
     }
 
 }

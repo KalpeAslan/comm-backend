@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import {UserEntity} from "./user.entity";
 import {CurrencyEntity} from "./currency.entity";
+import {AddressEntity} from "./addresses.entity";
 
 @Entity('product')
 export class ProductEntity{
@@ -17,6 +18,10 @@ export class ProductEntity{
 
     @ManyToOne(() => UserEntity, user => user.id)
     user: UserEntity
+
+    @ManyToOne(() => AddressEntity, address => address.id)
+    @JoinColumn()
+    wallet: AddressEntity
 
     @Column()
     name: string

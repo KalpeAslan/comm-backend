@@ -35,20 +35,6 @@ import {Env} from "../utils/env.utils";
                 }
             }
         }),
-      // MailerModule.forRoot({
-      //   transport: {
-      //     host: 'smtp.gmail.com',
-      //     port: 587,
-      //     auth: {
-      //       user: Env.readString('EMAIL_SENDER_ADDRESS'),
-      //       pass: communicationConfig().emailSenderPassword,
-      //     },
-      //   },
-      //   defaults: {
-      //     from: '"No Reply" <no-reply@localhost>',
-      //   },
-      //   preview: true,
-      // }),
     ],
     providers: [CommunicationService, MailerService],
     exports: [CommunicationService]

@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import { UserEntity } from "./user.entity";
 import {ENetwork} from "../constants/common.constants";
 
@@ -14,6 +14,5 @@ export class AddressEntity {
   network: string
 
   @ManyToOne(() => UserEntity, user => user.id, {nullable: true})
-  @JoinColumn()
   user: UserEntity;
 }

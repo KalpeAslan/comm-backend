@@ -6,6 +6,8 @@ import {Repository} from "typeorm";
 import {UsersService} from "../users/users.service";
 import {CurrencyEntity} from "../entities/currency.entity";
 import {UserEntity} from "../entities/user.entity";
+import {ENetwork} from "../constants/common.constants";
+import {WalletService} from "../users/wallet/wallet.service";
 
 @Injectable()
 export class ProductsService {
@@ -13,6 +15,7 @@ export class ProductsService {
         @InjectRepository(ProductEntity)
         private readonly productEntity: Repository<ProductEntity>,
         private readonly userService: UsersService,
+        private readonly walletService: WalletService,
         @InjectRepository(CurrencyEntity)
         private readonly currencyEntity: Repository<CurrencyEntity>,
     ) {
@@ -23,10 +26,14 @@ export class ProductsService {
         user: UserEntity,
         body: AddProductDto,
     ) {
+
+        const wallet = await this.walletService.findOrCreateAddressByUserAndEthAddress(user, body.wallet, ENetwork.Goerli)
+
         return this.productEntity.save({
             ...body,
             user,
-            currency: +body.currencyId
+            currency: +body.currencyId,
+            wallet,
         })
     }
 
@@ -39,7 +46,8 @@ export class ProductsService {
                 alias: 'p',
                 leftJoinAndSelect: {
                     user: 'p.user',
-                    currency: 'p.currency'
+                    currency: 'p.currency',
+                    wallet: 'p.wallet'
                 },
             }
         })

@@ -8,10 +8,11 @@ import { conf } from "../../conf";
 import { AddressEntity } from "../entities/addresses.entity";
 import { CommonModule } from "../common/common.module";
 import { WalletService } from './wallet/wallet.service';
+import {StoreEntity} from "../entities/store.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, AddressEntity]),
+    TypeOrmModule.forFeature([UserEntity, AddressEntity, StoreEntity]),
     MulterModule.register({
       dest: conf.fileDest
     }),
