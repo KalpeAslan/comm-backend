@@ -20,7 +20,6 @@ import {diskStorage} from "multer";
 import {editFileName, imageFileFilter} from "../products/utils/file-upload.utils";
 import {UpdateUserDto} from "../dto/updateUser.dto";
 import {ChangePasswordDto} from "./dto/change-password.dto";
-import {SaveStoreDto} from "./dto/save-store.dto";
 
 
 @Controller("/users")
@@ -66,14 +65,6 @@ export class UsersController {
         return this.userService.changePassword(user, body)
     }
 
-    @Firewall()
-    @Post('/saveStore')
-    saveStore(
-        @User() user: UserEntity,
-        @Body() body: SaveStoreDto
-    ) {
-        return this.userService.saveStore(user, body)
-    }
 
     @Get("/")
     async getUsers(

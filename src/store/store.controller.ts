@@ -1,56 +1,44 @@
-import { Body, Controller, Get, Param, Post, Res } from "@nestjs/common";
-import { CreateStoreDto } from "./dto/createStore.dto";
-import { Response } from "express";
-import { UsersService } from "../users/users.service";
-import { StoreService } from "./store.service";
-import { StoreEntity } from "../entities/store.entity";
-import {CreateProductDto} from "./dto/createProduct.dto";
+import {Body, Controller, Get, Post} from "@nestjs/common";
+import {UsersService} from "../users/users.service";
+import {StoreService} from "./store.service";
 import {UserEntity} from "../entities/user.entity";
 import {User} from "../users/decorators/user.decorator";
 import {Firewall} from "../auth/decorators/firewall.decorator";
+import {SaveStoreDto} from "./dto/save-store.dto";
+import {CreateApiKeyDto} from "./dto/createApiKey.dto";
 
 @Controller("/api/v1/store")
 export class StoreController {
 
-  constructor(
-    private readonly userService: UsersService,
-    private readonly storeService: StoreService
-  ) {
-  }
+    constructor(
+        private readonly userService: UsersService,
+        private readonly storeService: StoreService
+    ) {
+    }
 
-  @Get('products')
-  async getProducts(
-      @Res() response: Response
-  ) {
-    return response.send({
-      message: await this.storeService.getProducts(),
-      status: 200
-    }).status(200)
-  }
+    @Firewall()
+    @Get('/apiKeys')
+    getApiKeys(
+        @User() user: UserEntity,
+    ) {
+        return this.storeService.getApiKeys(user)
+    }
 
-  @Get('/:storeId')
-  async getStoreById(
-    @Param('storeId') storeId: number,
-    @Res() response: Response
-  ) {
-    const storeEntity = await this.storeService.getStore(storeId)
-    return response.send({
-      message: storeEntity || 'Store not found',
-      status: storeEntity ? 200 : 404
-    }).status(storeEntity ? 200 : 404)
-  }
+    @Firewall()
+    @Post('/saveStore')
+    saveStore(
+        @User() user: UserEntity,
+        @Body() body: SaveStoreDto
+    ) {
+        return this.storeService.saveStore(user, body)
+    }
 
-
-  @Firewall()
-  @Post('create-product')
-  async createProduct(
-      @Body() data: CreateProductDto,
-      @Res() response: Response,
-      @User() user: UserEntity
-  ) {
-    return response.send({
-      message: await this.storeService.createProduct(user, data),
-      status: 200
-    }).status(200)
-  }
+    @Firewall()
+    @Post('/createApiKey')
+    createApiKey(
+        @User() user: UserEntity,
+        @Body() dto: CreateApiKeyDto
+    ) {
+        return this.storeService.createApiKey(user, dto)
+    }
 }
