@@ -14,20 +14,12 @@ export class WalletService {
     ) {
     }
 
-    async getUserByAddress(address: string): Promise<UserEntity | null> {
-        const addressEntity: AddressEntity = await this.addressesEntityRepository.findOne({
-            join: {
-                alias: "address",
-                leftJoinAndSelect: {
-                    user: "address.user"
-                }
-            },
-            where: {
-                address
+    async findWalletByUserId(userId: number) {
+        return this.addressesEntityRepository.findOne({
+            user: {
+                id: userId
             }
-        });
-        if(!addressEntity) return null;
-        return addressEntity.user
+        })
     }
 
     async findOrCreateAddressEntityByEthAddress(walletAddress: string, network: ENetwork): Promise<AddressEntity> {

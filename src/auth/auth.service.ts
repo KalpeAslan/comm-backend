@@ -40,7 +40,7 @@ export class AuthService {
 
         user = new UserEntity();
 
-        user.email = email;
+        user.email = email.toLowerCase();
         user.password = this.helper.encodePassword(password);
 
         await this.usersRepository.save(user);

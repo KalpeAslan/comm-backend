@@ -51,7 +51,7 @@ export class ProductsController {
         return this.productsService.getAllProducts()
     }
 
-
+    @Firewall()
     @Get('/:id')
     async getProductById(
         @Param('id') id: string

@@ -33,7 +33,7 @@ export class AuthHelper {
                 },
                 {
                     secret: this.config.jwtSecretKey,
-                    expiresIn: '15m',
+                    expiresIn: '30m',
                 },
             ),
             this.jwtService.signAsync(

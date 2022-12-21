@@ -8,7 +8,6 @@ import {UserEntity} from "../entities/user.entity";
 import {AddressEntity} from "../entities/addresses.entity";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionsEntity} from "../entities/product-transactions.entity";
-import {CurrencyService} from "src/common/currencies/currency.service";
 import {EGrow, EPeriods} from "./constants/transaction.constants";
 import {getDateFromPeriod} from "./utils/transactions.utils";
 import {CurrencyEntity} from "src/entities/currency.entity";
@@ -31,7 +30,6 @@ export class TransactionsService {
         private readonly addressEntity: Repository<AddressEntity>,
         @InjectRepository(ProductTransactionsEntity)
         private readonly productTransactionRepository: Repository<ProductTransactionsEntity>,
-
     ) {
     }
 
@@ -40,10 +38,12 @@ export class TransactionsService {
             const tx = await this.saveTransaction(data)
             const seller = await this.userService.findUserById(data.sellerId)
             const product = await this.productService.getProductById(data.productId)
+            await this.walletService.findOrCreateAddressByUserAndEthAddress(user, data.fromAddress, ENetwork.Goerli)
             return this.productTransactionRepository.save({
                 transaction: tx,
                 seller,
-                product
+                product,
+                buyer: user
             })
         } catch (e) {
             console.log(e)
@@ -77,22 +77,16 @@ export class TransactionsService {
 
     async getTransactionsMeta(userId: number) {
 
-        console.log('getTransactionsMeta');
-        const cashFlow = await this.getTransactionsCashFlow(userId)
-        console.log('cashFlow');
-        
-        const transactionsCount = await this.getTransactionsCount(userId)
-        console.log('transactionsCount');
-        
+        const wallet = await this.walletService.findWalletByUserId(userId)
+        const cashFlow = wallet ? await this.getTransactionsCashFlow(wallet.id) : 0
+
+        const transactionsCount = wallet ? await this.getTransactionsCount(wallet.id) : 0
+
         const clients = await this.getClientsCount(userId)
-        console.log('getClientsCount');
-        
+
         const incomeTotal = await this.getIncome(userId, EPeriods.Month)
-        console.log('getIncome');
-        
+
         const productsIncomes = await this.getProductIncomes(userId)
-        console.log('productsIncomes');
-        
 
         return {
             cashFlow,
@@ -189,11 +183,16 @@ export class TransactionsService {
             }
         }))
 
+
         data.incomes = productTx.reduce((acc, product) => {
             data.incomeTotal += +product.product.price
             const prevItem = acc.slice(-1)[0] ? acc.slice(-1)[0] : undefined
-            const growth = this.computeGrowthNew(prevItem && prevItem.transaction.value, prevItem && prevItem.transaction.currencyTo,
-                product.transaction.value, product.transaction.currencyTo)
+            const growth = prevItem && prevItem.transaction ?
+                this.computeGrowthNew(
+                    prevItem && prevItem.transaction.value,
+                    prevItem && prevItem.transaction.currencyTo,
+                    product.transaction.value, product.transaction.currencyTo)
+                : EGrow.Positive
             return [
                 ...acc,
                 ({
@@ -216,7 +215,7 @@ export class TransactionsService {
 
 
     private computeGrowthNew(prevItemPrice: string | number | undefined, prevItemCurrency: CurrencyEntity | undefined,
-                                   currentItemPrice: string | number, currentItemCurrency: CurrencyEntity): EGrow {
+                             currentItemPrice: string | number, currentItemCurrency: CurrencyEntity): EGrow {
 
         if (!prevItemPrice || !prevItemCurrency) return EGrow.Positive
         const prevConvertedPrice = +prevItemPrice * +prevItemCurrency.toUsd
@@ -234,11 +233,11 @@ export class TransactionsService {
         })
     }
 
-    private async getTransactionsCashFlow(userId: number) {
+    private async getTransactionsCashFlow(walletId: number) {
         const allTransactions = await this.transactionsRepository.find({
             where: [
-                {from: userId},
-                {to: userId}
+                {from: walletId},
+                {to: walletId}
             ]
         })
 
@@ -249,11 +248,11 @@ export class TransactionsService {
     }
 
 
-    private getTransactionsCount(userId: number) {
+    private getTransactionsCount(walletId: number) {
         return this.transactionsRepository.count({
             where: [
-                {from: userId},
-                {to: userId}
+                {from: walletId},
+                {to: walletId}
             ]
         })
     }
