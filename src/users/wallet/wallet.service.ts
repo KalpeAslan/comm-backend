@@ -66,10 +66,10 @@ export class WalletService {
             }, )
         }
 
-
-        if(wallet.user.id !== user.id) throw new HttpException({
-            message: 'This eth address is not yours!'
-        }, 409)
+        //
+        // if(wallet.user.id !== user.id) throw new HttpException({
+        //     message: 'This eth address is not yours!'
+        // }, 409)
 
         return wallet
     }
