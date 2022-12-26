@@ -5,6 +5,8 @@ import {RegisterEmailDto} from "./dto/register-email.dto";
 import {RefreshTokenDto} from './dto/refresh-token.dto'
 import { UsersService } from 'src/users/users.service';
 import { VerifyCodeDto } from './dto/verify-code.dto';
+import {SsoSignUpDto} from "./dto/sso-sign-up.dto";
+import {ESsoTypes} from "./auth.constants";
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +25,15 @@ export class AuthController {
         return this.authService.registerByEmail(body)
     }
 
+    @Post('/sso-sign-up')
+    async ssoSignUp(
+        @Body() body: SsoSignUpDto
+    ) {
+        switch (body.type) {
+            case ESsoTypes.GOOGLE:
+                return this.authService.googleSsoSignUp(body)
+        }
+    }
 
     @Post('/sign-in')
     async signIn(

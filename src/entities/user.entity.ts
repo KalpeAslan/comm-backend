@@ -17,7 +17,7 @@ export class UserEntity {
   id: number;
 
   @Exclude()
-  @Column({ length: 255 })
+  @Column({ length: 255, nullable: true })
   password: string;
 
   @Exclude()

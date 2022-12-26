@@ -50,14 +50,18 @@ export class UsersService {
         return paginate<UserEntity>(this.usersRepository, options);
     }
 
-    async findUserById(id: number): Promise<UserEntity> {
-        return await this.usersRepository.findOne({id});
+    findUserById(id: number): Promise<UserEntity | undefined> {
+        return this.usersRepository.findOne({id});
     }
 
     findByRefreshToken(refresh_token: string) {
         return this.usersRepository.findOne({where: {
             refresh_token
         }})
+    }
+
+    findByEmail(email: string): Promise<UserEntity | undefined> {
+        return this.usersRepository.findOne({email: email.toLowerCase()})
     }
 
 
