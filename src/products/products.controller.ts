@@ -6,7 +6,7 @@ import {diskStorage} from "multer";
 import {editFileName, imageFileFilter} from "./utils/file-upload.utils";
 import {UsersService} from "../users/users.service";
 import {UserEntity} from "../entities/user.entity";
-import {User} from "../users/decorators/user.decorator";
+import {User} from "../auth/decorators/user.decorator";
 import {Firewall} from "../auth/decorators/firewall.decorator";
 
 

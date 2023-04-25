@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {JwtModule} from "@nestjs/jwt";
 import {TypeOrmModule} from "@nestjs/typeorm";
@@ -10,6 +10,8 @@ import {AccessTokenStrategy} from "./strategies/accessToken.strategy";
 import {CommunicationModule} from '../communication/communication.module';
 import {RefreshTokenStrategy} from "./strategies/refreshToken.strategy";
 import {authConfig} from "../configs/auth.config";
+import {StoreModule} from "../store/store.module";
+import {ApiKeyMiddleware} from "./middlewares/apiKey.middleware";
 
 @Module({
     imports: [
@@ -23,10 +25,15 @@ import {authConfig} from "../configs/auth.config";
         }),
         TypeOrmModule.forFeature([UserEntity]),
         UsersModule,
-        CommunicationModule
+        CommunicationModule,
+        StoreModule
     ],
     providers: [AuthService, AuthHelper, AccessTokenStrategy, RefreshTokenStrategy],
     controllers: [AuthController]
 })
-export class AuthModule {
+export class AuthModule implements NestModule {
+    configure(consumer: MiddlewareConsumer): any {
+        consumer.apply(ApiKeyMiddleware)
+            .forRoutes('invoices')
+    }
 }

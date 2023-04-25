@@ -3,13 +3,12 @@ import { TransactionsService } from "./transactions.service";
 import { TransactionDto } from "../dto/transaction.dto";
 import { Response } from "express";
 import { IResponse } from "../ts/common";
-import { UsersService } from "../users/users.service";
 import { Pagination } from "nestjs-typeorm-paginate";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionDto} from "../dto/product-transaction.dto";
 import {EPeriods} from "./constants/transaction.constants";
 import {UserEntity} from "../entities/user.entity";
-import {User} from "../users/decorators/user.decorator";
+import {User} from "../auth/decorators/user.decorator";
 import {Firewall} from "../auth/decorators/firewall.decorator";
 
 @Controller("/api/v1/transactions")

@@ -1,19 +1,20 @@
-import { Body, Controller,Post, HttpException, Patch } from '@nestjs/common';
+import {Body, Controller, Patch, Post} from '@nestjs/common';
 import {AuthService} from "./auth.service";
 import {LoginDto} from "./dto/login.dto";
 import {RegisterEmailDto} from "./dto/register-email.dto";
 import {RefreshTokenDto} from './dto/refresh-token.dto'
-import { UsersService } from 'src/users/users.service';
-import { VerifyCodeDto } from './dto/verify-code.dto';
+import {VerifyCodeDto} from './dto/verify-code.dto';
 import {SsoSignUpDto} from "./dto/sso-sign-up.dto";
-import {ESsoTypes} from "./auth.constants";
+import {EFirewall, ESsoTypes} from "./auth.constants";
+import {Firewall} from "./decorators/firewall.decorator";
+import {UserEntity} from "../entities/user.entity";
+import {User} from "./decorators/user.decorator";
 
 @Controller('auth')
 export class AuthController {
 
     constructor(
-        private readonly authService: AuthService,
-        private readonly usersService: UsersService,
+        private readonly authService: AuthService
     ) {
     }
 
@@ -55,17 +56,12 @@ export class AuthController {
     }
 
 
+    @Firewall(EFirewall.refresh)
     @Post('/refresh')
     async refresh(
-        @Body() body: RefreshTokenDto
+        @Body() body: RefreshTokenDto,
+        @User() user: UserEntity
     ) {
-        const user = await this.usersService.findByRefreshToken(body.refreshToken)
-
-        if(!user) throw new HttpException({
-            message: 'Invalid refresh Token'
-        }, 401)
-
-
         return await this.authService.refreshAndSaveTokens(user)
     }
 

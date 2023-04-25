@@ -1,6 +1,6 @@
 import {HttpException, Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
-import {MoreThan, Repository} from "typeorm";
+import {getManager, MoreThan, Repository} from "typeorm";
 import {TransactionDto} from "../dto/transaction.dto";
 import {IPaginationOptions, paginate, Pagination} from "nestjs-typeorm-paginate";
 import {UsersService} from "../users/users.service";
@@ -8,7 +8,7 @@ import {UserEntity} from "../entities/user.entity";
 import {AddressEntity} from "../entities/addresses.entity";
 import {TransactionEntity} from "../entities/transaction.entity";
 import {ProductTransactionsEntity} from "../entities/product-transactions.entity";
-import {EGrow, EPeriods} from "./constants/transaction.constants";
+import {EGrow, EPeriods, ETransactionStatus} from "./constants/transaction.constants";
 import {getDateFromPeriod} from "./utils/transactions.utils";
 import {CurrencyEntity} from "src/entities/currency.entity";
 import {WalletService} from "../users/wallet/wallet.service";
@@ -35,15 +35,33 @@ export class TransactionsService {
 
     async saveProductTransaction(user: UserEntity, data: ProductTransactionDto) {
         try {
-            const tx = await this.saveTransaction(data)
             const seller = await this.userService.findUserById(data.sellerId)
             const product = await this.productService.getProductById(data.productId)
-            await this.walletService.findOrCreateAddressByUserAndEthAddress(user, data.fromAddress, ENetwork.Goerli)
-            return this.productTransactionRepository.save({
-                transaction: tx,
-                seller,
-                product,
-                buyer: user
+
+            await getManager().transaction(async manager => {
+                await this.walletService.findOrCreateAddressByUserAndEthAddress(user, data.fromAddress, ENetwork.Goerli)
+
+                const from = await this.walletService
+                    .findOrCreateAddressEntityByEthAddress(data.fromAddress, ENetwork.Goerli);
+                const to = await this.walletService
+                    .findOrCreateAddressEntityByEthAddress(data.toAddress, ENetwork.Goerli)
+                const tx = await manager.getRepository(TransactionEntity).save({
+                    ...data,
+                    timestamp: new Date(+data.timestampString * 1000).toString(),
+                    from,
+                    to,
+                    value: +data.value || 0,
+                    status: ETransactionStatus.SUCCESS
+                });
+
+                await manager.getRepository(ProductTransactionsEntity)
+                    .save({
+                        transaction: tx,
+                        seller,
+                        product,
+                        buyer: user
+                    })
+
             })
         } catch (e) {
             console.log(e)
@@ -60,7 +78,8 @@ export class TransactionsService {
             timestamp: new Date(+transactionDto.timestampString * 1000).toString(),
             from,
             to,
-            value: +transactionDto.value || 0
+            value: +transactionDto.value || 0,
+            status: ETransactionStatus.SUCCESS
         };
         return this.transactionsRepository.save(transaction);
     }
@@ -100,7 +119,8 @@ export class TransactionsService {
     public getMyTransactions(userId: number) {
         return this.transactionsRepository.find({
             where: {
-                from: userId
+                from: userId,
+                status: ETransactionStatus.SUCCESS
             },
             join: {
                 alias: 't',
@@ -118,7 +138,8 @@ export class TransactionsService {
         const txIncomes = await this.transactionsRepository.find({
             where: {
                 // to: userId,
-                created_at: MoreThan(computedPeriod)
+                created_at: MoreThan(computedPeriod),
+                status: ETransactionStatus.SUCCESS
             },
             join: {
                 alias: 't',
@@ -236,8 +257,8 @@ export class TransactionsService {
     private async getTransactionsCashFlow(walletId: number) {
         const allTransactions = await this.transactionsRepository.find({
             where: [
-                {from: walletId},
-                {to: walletId}
+                {from: walletId, status: ETransactionStatus.SUCCESS},
+                {to: walletId, status: ETransactionStatus.SUCCESS},
             ]
         })
 
@@ -251,8 +272,8 @@ export class TransactionsService {
     private getTransactionsCount(walletId: number) {
         return this.transactionsRepository.count({
             where: [
-                {from: walletId},
-                {to: walletId}
+                {from: walletId, status: ETransactionStatus.SUCCESS},
+                {to: walletId, status: ETransactionStatus.SUCCESS}
             ]
         })
     }

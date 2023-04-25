@@ -3,11 +3,12 @@ import {
     CreateDateColumn, DeleteDateColumn,
     Entity,
     JoinColumn,
-    ManyToOne,
+    ManyToOne, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {UserEntity} from "./user.entity";
+import {AddressEntity} from "./addresses.entity";
 
 @Entity()
 export class ApiKeyEntity {
@@ -21,6 +22,10 @@ export class ApiKeyEntity {
     @ManyToOne(() => UserEntity, user => user.id)
     @JoinColumn()
     userId: number
+
+    @ManyToOne(() => AddressEntity, address => address.id)
+    @JoinColumn()
+    walletAddress: AddressEntity
 
     @Column({type: 'boolean', default: true})
     limited: boolean

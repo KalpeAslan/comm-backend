@@ -2,7 +2,7 @@ import {Body, Controller, Get, Post} from "@nestjs/common";
 import {UsersService} from "../users/users.service";
 import {StoreService} from "./store.service";
 import {UserEntity} from "../entities/user.entity";
-import {User} from "../users/decorators/user.decorator";
+import {User} from "../auth/decorators/user.decorator";
 import {Firewall} from "../auth/decorators/firewall.decorator";
 import {SaveStoreDto} from "./dto/save-store.dto";
 import {CreateApiKeyDto} from "./dto/createApiKey.dto";

@@ -5,3 +5,9 @@ export enum ESsoTypes {
 export enum EAuthExceptions {
     emailExist = 'User with same email exist'
 }
+
+export enum EFirewall {
+    access,
+    refresh,
+    apiKey
+}

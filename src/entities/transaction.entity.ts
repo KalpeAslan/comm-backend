@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import {CurrencyEntity} from "./currency.entity";
 import {AddressEntity} from "./addresses.entity";
+import {ETransactionStatus} from "../transactions/constants/transaction.constants";
 
 @Entity("transactions")
 export class TransactionEntity {
@@ -24,8 +25,8 @@ export class TransactionEntity {
   @Column({ type: "timestamp" })
   timestamp: string;
 
-  @Column({ type: "char", length: 18 })
-  status: string;
+  @Column({ type: 'enum', enum: ETransactionStatus, default: ETransactionStatus.SUCCESS })
+  status: ETransactionStatus;
 
   @Column({ type: "numeric" })
   value: number;

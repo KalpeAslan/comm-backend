@@ -53,7 +53,7 @@ export class AuthService {
     }
 
     async googleSsoSignUp(dto: SsoSignUpDto) {
-        const googleSsoModel: IGoogleSsoModel = jwtDecode(dto.token)
+        const googleSsoModel:  IGoogleSsoModel = jwtDecode(dto.token)
         const isUserEmailExist = await this.userService.findByEmail(googleSsoModel.email)
 
         if(isUserEmailExist) {

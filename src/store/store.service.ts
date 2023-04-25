@@ -3,7 +3,6 @@ import {UsersService} from "../users/users.service";
 import {InjectRepository} from "@nestjs/typeorm";
 import {StoreEntity} from "../entities/store.entity";
 import {Repository} from "typeorm";
-import {PrivateKeyService} from "../common/private-key/private-key.service";
 import {ProductEntity} from "../entities/product.entity";
 import {UserEntity} from "../entities/user.entity";
 import {WalletService} from "../users/wallet/wallet.service";
@@ -17,7 +16,6 @@ export class StoreService {
 
     constructor(
         private readonly userService: UsersService,
-        private readonly privateKeyService: PrivateKeyService,
         private readonly walletService: WalletService,
         private readonly jwtService: JwtService,
         @InjectRepository(StoreEntity)
@@ -66,7 +64,23 @@ export class StoreService {
     }
 
 
-    async getApiKeys(user: UserEntity) {
+    //Getters
+
+    findApiKey(key: string) {
+        return this.apiKeyEntity.findOne({
+            where: {
+                key,
+            },
+            join: {
+                alias: 'a',
+                leftJoinAndSelect: {
+                    user: 'a.userId'
+                }
+            }
+        })
+    }
+
+    getApiKeys(user: UserEntity) {
         return this.apiKeyEntity.find({
             userId: user.id
         })

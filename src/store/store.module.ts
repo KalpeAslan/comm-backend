@@ -9,10 +9,13 @@ import {ProductEntity} from "../entities/product.entity";
 import {ApiKeyEntity} from "../entities/apiKey.entity";
 import {JwtModule} from "@nestjs/jwt";
 import {authConfig} from "../configs/auth.config";
+import { InvoicesService } from './invoices/invoices.service';
+import { InvoicesController } from './invoices/invoices.controller';
+import {InvoiceEntity} from "../entities/invoice.entity";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([StoreEntity, ProductEntity, ApiKeyEntity]),
+        TypeOrmModule.forFeature([InvoiceEntity, StoreEntity, ProductEntity, ApiKeyEntity]),
         UsersModule, CommonModule,
         JwtModule.registerAsync({
             useFactory() {
@@ -23,8 +26,9 @@ import {authConfig} from "../configs/auth.config";
             }
         }),
     ],
-    controllers: [StoreController],
-    providers: [StoreService]
+    controllers: [StoreController, InvoicesController],
+    providers: [StoreService, InvoicesService],
+    exports: [StoreService]
 })
 export class StoreModule {
 }

@@ -13,7 +13,7 @@ import {
 import {UsersService} from "./users.service";
 import {Response} from "express";
 import {UserEntity} from "../entities/user.entity";
-import {User} from "./decorators/user.decorator";
+import {User} from "../auth/decorators/user.decorator";
 import {Firewall} from "src/auth/decorators/firewall.decorator";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
